@@ -1,0 +1,142 @@
+.pagina-detalle {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem;
+  color: #1f2937;
+  font-family: Arial, sans-serif;
+}
+
+.volver {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  color: #2563eb;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.cabecera-detalle {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.cabecera-detalle h1 {
+  margin: 0.25rem 0;
+  font-size: 2rem;
+}
+
+.cabecera-detalle p {
+  margin: 0.25rem 0;
+}
+
+.referencia {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.estado {
+  border-radius: 999px;
+  padding: 0.5rem 0.9rem;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-weight: 700;
+}
+
+.rejilla {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.tarjeta {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  background: white;
+  box-shadow: 0 4px 14px rgb(15 23 42 / 6%);
+}
+
+.tarjeta h2 {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+}
+
+.ancho-completo {
+  grid-column: 1 / -1;
+}
+
+dl {
+  margin: 0;
+}
+
+dl div {
+  display: grid;
+  grid-template-columns: minmax(130px, 0.8fr) 1.2fr;
+  gap: 1rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+dl div:last-child {
+  border-bottom: 0;
+}
+
+dt {
+  color: #64748b;
+}
+
+dd {
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.lista-fotos {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lista-fotos li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.mensaje {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background: #eff6ff;
+}
+
+.error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+@media (max-width: 720px) {
+  .pagina-detalle {
+    padding: 1rem;
+  }
+
+  .cabecera-detalle {
+    flex-direction: column;
+  }
+
+  .rejilla {
+    grid-template-columns: 1fr;
+  }
+
+  .ancho-completo {
+    grid-column: auto;
+  }
+
+  dl div {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+}

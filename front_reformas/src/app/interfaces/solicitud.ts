@@ -24,11 +24,14 @@ export interface Solicitud {
   zona: string | null;
   vivienda_habitada: string | null;
   contacto_preferido: string | null;
+  fotos_estado_actual: string | null;
+  fotos_referencia: string | null;
   presupuesto: string | null;
   fecha_inicio: string | null;
   detalles: string | null;
   drive_folder_id: string | null;
   notas_internas: string | null;
+  canal_origen: string;
   created_at: string;
   updated_at: string;
   cliente: Cliente;
