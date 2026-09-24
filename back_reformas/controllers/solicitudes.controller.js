@@ -213,9 +213,33 @@ const obtenerSolicitud = async (req, res, next) => {
   }
 };
 
+const eliminarSolicitud = async (req, res, next) => {
+  try {
+    const solicitudId = Number(req.params.id);
+    const solicitud = await Solicitud.findByPk(solicitudId);
+
+    if (!solicitud) {
+      return res.status(404).json({
+        ok: false,
+        error: 'La solicitud no existe'
+      });
+    }
+
+    await solicitud.destroy();
+
+    res.json({
+      ok: true,
+      mensaje: 'Solicitud eliminada correctamente'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   crearSolicitud,
   actualizarSolicitud,
   listarSolicitudes,
-  obtenerSolicitud
-}
+  obtenerSolicitud,
+  eliminarSolicitud
+};
