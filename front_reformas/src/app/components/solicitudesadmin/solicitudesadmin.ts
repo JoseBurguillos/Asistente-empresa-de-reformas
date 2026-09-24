@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Solicitud } from '../../interfaces/solicitud';
@@ -12,26 +12,26 @@ import { SolicitudesService } from '../../services/solicitudes';
 export class Solicitudesadmin implements OnInit {
   private readonly solicitudesService = inject(SolicitudesService);
 
-  solicitudes: Solicitud[] = [];
-  cargando = true;
-  error = '';
+  solicitudes = signal<Solicitud[]>([]);
+  cargando = signal(true);
+  error = signal('');
 
   ngOnInit(): void {
     this.cargarSolicitudes();
   }
 
   cargarSolicitudes(): void {
-    this.cargando = true;
-    this.error = '';
+    this.cargando.set(true);
+    this.error.set('');
 
     this.solicitudesService.obtenerSolicitudes().subscribe({
       next: (respuesta) => {
-        this.solicitudes = respuesta.solicitudes;
-        this.cargando = false;
+        this.solicitudes.set(respuesta.solicitudes);
+        this.cargando.set(false);
       },
       error: () => {
-        this.error = 'No se han podido cargar las solicitudes.';
-        this.cargando = false;
+        this.error.set('No se han podido cargar las solicitudes.');
+        this.cargando.set(false);
       }
     });
   }

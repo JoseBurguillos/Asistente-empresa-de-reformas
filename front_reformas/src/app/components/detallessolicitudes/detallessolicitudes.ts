@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Solicitud } from '../../interfaces/solicitud';
@@ -14,27 +14,27 @@ export class Detallessolicitudes implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly solicitudesService = inject(SolicitudesService);
 
-  solicitud?: Solicitud;
-  cargando = true;
-  error = '';
+  solicitud = signal<Solicitud | undefined>(undefined);
+  cargando = signal(true);
+  error = signal('');
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
 
     if (!id) {
-      this.error = 'La solicitud indicada no es válida.';
-      this.cargando = false;
+      this.error.set('La solicitud indicada no es válida.');
+      this.cargando.set(false);
       return;
     }
 
     this.solicitudesService.obtenerSolicitud(id).subscribe({
       next: (respuesta) => {
-        this.solicitud = respuesta.solicitud;
-        this.cargando = false;
+        this.solicitud.set(respuesta.solicitud);
+        this.cargando.set(false);
       },
       error: () => {
-        this.error = 'No se ha podido cargar la solicitud.';
-        this.cargando = false;
+        this.error.set('No se ha podido cargar la solicitud.');
+        this.cargando.set(false);
       }
     });
   }

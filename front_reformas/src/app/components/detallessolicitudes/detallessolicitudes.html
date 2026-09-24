@@ -1,9 +1,9 @@
 <a routerLink="/">← Volver a solicitudes</a>
 
-<p *ngIf="cargando">Cargando solicitud...</p>
-<p *ngIf="error">{{ error }}</p>
+<p *ngIf="cargando()">Cargando solicitud...</p>
+<p *ngIf="error()">{{ error() }}</p>
 
-<section *ngIf="solicitud && !cargando" class="detalle">
+<section *ngIf="solicitud() as solicitud; else sinSolicitud" class="detalle">
   <header>
     <p>Solicitud #{{ solicitud.id }}</p>
     <h1>{{ solicitud.cliente.nombre || 'Cliente sin nombre' }}</h1>
@@ -22,3 +22,5 @@
     <div><dt>Detalles</dt><dd>{{ solicitud.detalles || 'No indicados' }}</dd></div>
   </dl>
 </section>
+
+<ng-template #sinSolicitud></ng-template>
