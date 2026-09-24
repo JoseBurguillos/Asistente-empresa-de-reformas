@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
+const { DataTypes } = require('sequelize');
 
 const { sequelize } = require('./models');
 
@@ -35,10 +36,30 @@ app.use((error, req, res, next) => {
 
 const PORT = process.env.PORT || 3001;
 
+async function aplicarMigraciones() {
+  const queryInterface = sequelize.getQueryInterface();
+  const columnas = await queryInterface.describeTable('solicitudes');
+
+  if (!columnas.fotos_estado_actual) {
+    await queryInterface.addColumn('solicitudes', 'fotos_estado_actual', {
+      type: DataTypes.STRING(30),
+      allowNull: true
+    });
+  }
+
+  if (!columnas.fotos_referencia) {
+    await queryInterface.addColumn('solicitudes', 'fotos_referencia', {
+      type: DataTypes.STRING(30),
+      allowNull: true
+    });
+  }
+}
+
 async function iniciarServidor() {
   try {
     await sequelize.authenticate();
     await sequelize.sync();
+    await aplicarMigraciones();
 
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`Backend funcionando en http://localhost:${PORT}`);

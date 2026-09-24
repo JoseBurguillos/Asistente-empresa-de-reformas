@@ -38,4 +38,11 @@ export class Detallessolicitudes implements OnInit {
       }
     });
   }
+
+  formatearTexto(valor: string | null | undefined, alternativo = 'No indicado'): string {
+    if (!valor) return alternativo;
+
+    const texto = valor.replaceAll('_', ' ');
+    return texto.charAt(0).toUpperCase() + texto.slice(1);
+  }
 }

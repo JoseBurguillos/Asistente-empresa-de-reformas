@@ -68,6 +68,16 @@ const Solicitud = sequelize.define('Solicitud', {
     allowNull: true
   },
 
+  fotos_estado_actual: {
+    type: DataTypes.STRING(30),
+    allowNull: true
+  },
+
+  fotos_referencia: {
+    type: DataTypes.STRING(30),
+    allowNull: true
+  },
+
   // Solo se guarda lo que diga el cliente.
   // El bot nunca calcula ni envía presupuestos.
   presupuesto: {
