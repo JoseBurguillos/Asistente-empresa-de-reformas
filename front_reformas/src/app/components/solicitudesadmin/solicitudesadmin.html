@@ -8,10 +8,10 @@
     <button type="button" (click)="cargarSolicitudes()">Actualizar</button>
   </header>
 
-  <p *ngIf="cargando">Cargando solicitudes...</p>
-  <p *ngIf="error">{{ error }}</p>
+  <p *ngIf="cargando()">Cargando solicitudes...</p>
+  <p *ngIf="error()">{{ error() }}</p>
 
-  <table *ngIf="!cargando && !error">
+  <table *ngIf="!cargando() && !error()">
     <thead>
       <tr>
         <th>Cliente</th>
@@ -23,7 +23,7 @@
     </thead>
 
     <tbody>
-      <tr *ngFor="let solicitud of solicitudes" [routerLink]="['/solicitudes', solicitud.id]">
+      <tr *ngFor="let solicitud of solicitudes()" [routerLink]="['/solicitudes', solicitud.id]">
         <td>{{ solicitud.cliente.nombre || 'Sin nombre' }}</td>
         <td>{{ solicitud.zona || 'Sin zona' }}</td>
         <td>{{ solicitud.tipo_obra || solicitud.detalles || 'Por definir' }}</td>
