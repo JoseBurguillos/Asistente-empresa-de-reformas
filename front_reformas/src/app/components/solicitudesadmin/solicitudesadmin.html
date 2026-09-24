@@ -1,0 +1,35 @@
+<section class="solicitudes">
+  <header class="cabecera">
+    <div>
+      <p>Panel de gestión</p>
+      <h1>Solicitudes</h1>
+    </div>
+
+    <button type="button" (click)="cargarSolicitudes()">Actualizar</button>
+  </header>
+
+  <p *ngIf="cargando">Cargando solicitudes...</p>
+  <p *ngIf="error">{{ error }}</p>
+
+  <table *ngIf="!cargando && !error">
+    <thead>
+      <tr>
+        <th>Cliente</th>
+        <th>Zona</th>
+        <th>Trabajo</th>
+        <th>Estado</th>
+        <th>Contacto</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let solicitud of solicitudes" [routerLink]="['/solicitudes', solicitud.id]">
+        <td>{{ solicitud.cliente.nombre || 'Sin nombre' }}</td>
+        <td>{{ solicitud.zona || 'Sin zona' }}</td>
+        <td>{{ solicitud.tipo_obra || solicitud.detalles || 'Por definir' }}</td>
+        <td>{{ solicitud.estado }}</td>
+        <td>{{ solicitud.contacto_preferido || 'Por definir' }}</td>
+      </tr>
+    </tbody>
+  </table>
+</section>

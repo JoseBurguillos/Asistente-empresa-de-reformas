@@ -1,0 +1,24 @@
+<a routerLink="/">← Volver a solicitudes</a>
+
+<p *ngIf="cargando">Cargando solicitud...</p>
+<p *ngIf="error">{{ error }}</p>
+
+<section *ngIf="solicitud && !cargando" class="detalle">
+  <header>
+    <p>Solicitud #{{ solicitud.id }}</p>
+    <h1>{{ solicitud.cliente.nombre || 'Cliente sin nombre' }}</h1>
+  </header>
+
+  <dl>
+    <div><dt>Estado</dt><dd>{{ solicitud.estado }}</dd></div>
+    <div><dt>Teléfono</dt><dd>{{ solicitud.cliente.telefono }}</dd></div>
+    <div><dt>Email</dt><dd>{{ solicitud.cliente.email || 'No indicado' }}</dd></div>
+    <div><dt>Zona</dt><dd>{{ solicitud.zona || 'No indicada' }}</dd></div>
+    <div><dt>Trabajo</dt><dd>{{ solicitud.tipo_obra || 'Por definir' }}</dd></div>
+    <div><dt>Estancia</dt><dd>{{ solicitud.estancia || 'No indicada' }}</dd></div>
+    <div><dt>Medidas</dt><dd>{{ solicitud.medidas || 'No indicadas' }}</dd></div>
+    <div><dt>Vivienda habitada</dt><dd>{{ solicitud.vivienda_habitada || 'No indicado' }}</dd></div>
+    <div><dt>Contacto preferido</dt><dd>{{ solicitud.contacto_preferido || 'No indicado' }}</dd></div>
+    <div><dt>Detalles</dt><dd>{{ solicitud.detalles || 'No indicados' }}</dd></div>
+  </dl>
+</section>
