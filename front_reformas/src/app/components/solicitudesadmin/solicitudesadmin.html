@@ -19,16 +19,28 @@
         <th>Trabajo</th>
         <th>Estado</th>
         <th>Contacto</th>
+        <th>Acciones</th>
       </tr>
     </thead>
 
     <tbody>
-      <tr *ngFor="let solicitud of solicitudes()" [routerLink]="['/solicitudes', solicitud.id]">
+      <tr *ngFor="let solicitud of solicitudes()">
         <td>{{ solicitud.cliente.nombre || 'Sin nombre' }}</td>
         <td>{{ solicitud.zona || 'Sin zona' }}</td>
         <td>{{ solicitud.tipo_obra || solicitud.detalles || 'Por definir' }}</td>
         <td>{{ solicitud.estado }}</td>
         <td>{{ solicitud.contacto_preferido || 'Por definir' }}</td>
+        <td class="acciones">
+          <a class="boton ver" [routerLink]="['/solicitudes', solicitud.id]">Ver</a>
+          <button
+            class="boton eliminar"
+            type="button"
+            [disabled]="eliminandoId() === solicitud.id"
+            (click)="eliminarSolicitud(solicitud)"
+          >
+            {{ eliminandoId() === solicitud.id ? 'Eliminando...' : 'Eliminar' }}
+          </button>
+        </td>
       </tr>
     </tbody>
   </table>

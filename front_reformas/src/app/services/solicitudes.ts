@@ -32,4 +32,10 @@ export class SolicitudesService {
       cambios
     );
   }
+
+  eliminarSolicitud(id: number): Observable<{ ok: boolean; mensaje: string }> {
+    return this.http.delete<{ ok: boolean; mensaje: string }>(
+      `${this.apiUrl}/${id}`
+    );
+  }
 }
