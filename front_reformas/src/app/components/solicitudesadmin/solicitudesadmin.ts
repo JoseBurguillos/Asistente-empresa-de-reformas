@@ -28,7 +28,7 @@ export class Solicitudesadmin implements OnInit {
 
     this.solicitudesService.obtenerSolicitudes().subscribe({
       next: (respuesta) => {
-        this.solicitudes.set(respuesta.solicitudes);
+        this.solicitudes.set([...respuesta.solicitudes].sort( (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()));
         this.cargando.set(false);
       },
       error: () => {
