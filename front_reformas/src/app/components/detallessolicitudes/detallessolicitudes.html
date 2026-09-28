@@ -65,14 +65,49 @@
           <div><dt>Referencias</dt><dd>{{ formatearTexto(solicitud.fotos_referencia) }}</dd></div>
         </dl>
 
+        <a
+          class="enlace-carpeta"
+          *ngIf="solicitud.drive_folder_id"
+          [href]="urlCarpetaDrive(solicitud.drive_folder_id)"
+          target="_blank"
+          rel="noopener"
+        >
+          Abrir carpeta completa en Drive
+        </a>
+
         <p *ngIf="solicitud.fotos.length === 0">Todavía no hay fotos registradas.</p>
 
-        <ul class="lista-fotos" *ngIf="solicitud.fotos.length > 0">
-          <li *ngFor="let foto of solicitud.fotos">
-            <span>{{ foto.nombre_archivo || 'Foto' }} · {{ formatearTexto(foto.tipo) }}</span>
-            <a *ngIf="foto.url_drive" [href]="foto.url_drive" target="_blank" rel="noopener">Abrir</a>
-          </li>
-        </ul>
+        <div class="galeria-fotos" *ngIf="solicitud.fotos.length > 0">
+          <article class="foto-tarjeta" *ngFor="let foto of solicitud.fotos">
+            <a
+              class="foto-vista"
+              [href]="foto.url_drive || urlMiniaturaDrive(foto)"
+              target="_blank"
+              rel="noopener"
+              [attr.aria-label]="'Abrir ' + (foto.nombre_archivo || 'foto') + ' en Google Drive'"
+            >
+              <img
+                [src]="urlMiniaturaDrive(foto)"
+                [alt]="foto.nombre_archivo || 'Foto de la solicitud'"
+                loading="lazy"
+                (error)="marcarImagenNoDisponible($event)"
+              />
+              <span class="foto-no-disponible">Vista previa no disponible</span>
+            </a>
+
+            <div class="foto-informacion">
+              <strong>{{ foto.nombre_archivo || 'Foto' }}</strong>
+              <span>{{ formatearTexto(foto.tipo) }}</span>
+              <a
+                [href]="foto.url_drive || urlMiniaturaDrive(foto)"
+                target="_blank"
+                rel="noopener"
+              >
+                Abrir original
+              </a>
+            </div>
+          </article>
+        </div>
       </article>
     </div>
   </section>
