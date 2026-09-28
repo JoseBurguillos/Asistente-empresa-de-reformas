@@ -11,9 +11,7 @@
         <h1>{{ solicitud.cliente.nombre || 'Cliente sin nombre' }}</h1>
         <p>{{ solicitud.detalles || 'Solicitud sin descripción' }}</p>
       </div>
-      <span [class]="'estado estado-' + solicitud.estado">
-        {{ formatearTexto(solicitud.estado) }}
-      </span>
+      <span class="estado">{{ formatearTexto(solicitud.estado) }}</span>
     </header>
 
     <div class="rejilla">

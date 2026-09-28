@@ -10,7 +10,6 @@ const solicitudesRouter = require('./routes/solicitudes.routes.js');
 const clientesRouter = require('./routes/clientes.routes.js');
 const fotosRouter = require('./routes/fotos.routes.js');
 const disenosIaRouter = require('./routes/diseno-ia.routes.js');
-const correccionesIaRouter = require('./routes/correcciones-ia.routes.js');
 
 const app = express();
 
@@ -25,7 +24,6 @@ app.use('/api/clientes', clientesRouter);
 app.use('/api/solicitudes', solicitudesRouter);
 app.use('/api/solicitudes', fotosRouter);
 app.use('/api/solicitudes', disenosIaRouter);
-app.use('/api/correcciones-ia', correccionesIaRouter);
 
 app.use((error, req, res, next) => {
   console.error(error);

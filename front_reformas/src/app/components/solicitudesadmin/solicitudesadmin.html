@@ -8,40 +8,59 @@
     <button type="button" (click)="cargarSolicitudes()">Actualizar</button>
   </header>
 
-  <p *ngIf="cargando()">Cargando solicitudes...</p>
-  <p *ngIf="error()">{{ error() }}</p>
+  <p class="aviso aviso-carga" *ngIf="cargando()">
+    <span class="indicador-carga" aria-hidden="true"></span>
+    Cargando solicitudes...
+  </p>
+  <p class="aviso aviso-error" *ngIf="error()">{{ error() }}</p>
 
-  <table *ngIf="!cargando() && !error()">
-    <thead>
-      <tr>
-        <th>Cliente</th>
-        <th>Zona</th>
-        <th>Trabajo</th>
-        <th>Estado</th>
-        <th>Contacto</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
+  <div
+    class="sin-solicitudes"
+    *ngIf="!cargando() && !error() && solicitudes().length === 0"
+  >
+    <h2>No hay nuevas solicitudes todavía</h2>
+    <p>Cuando un cliente confirme una solicitud por WhatsApp, aparecerá aquí.</p>
+  </div>
 
-    <tbody>
-      <tr *ngFor="let solicitud of solicitudes()">
-        <td>{{ solicitud.cliente.nombre || 'Sin nombre' }}</td>
-        <td>{{ solicitud.zona || 'Sin zona' }}</td>
-        <td>{{ solicitud.tipo_obra || solicitud.detalles || 'Por definir' }}</td>
-        <td>{{ solicitud.estado }}</td>
-        <td>{{ solicitud.contacto_preferido || 'Por definir' }}</td>
-        <td class="acciones">
-          <a class="boton ver" [routerLink]="['/solicitudes', solicitud.id]">Ver</a>
-          <button
-            class="boton eliminar"
-            type="button"
-            [disabled]="eliminandoId() === solicitud.id"
-            (click)="eliminarSolicitud(solicitud)"
-          >
-            {{ eliminandoId() === solicitud.id ? 'Eliminando...' : 'Eliminar' }}
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="tabla-contenedor" *ngIf="!cargando() && !error() && solicitudes().length > 0">
+    <table>
+      <thead>
+        <tr>
+          <th>Cliente</th>
+          <th>Zona</th>
+          <th>Trabajo</th>
+          <th>Estado</th>
+          <th>Contacto</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let solicitud of solicitudes()">
+          <td class="cliente">{{ solicitud.cliente.nombre || 'Sin nombre' }}</td>
+          <td>{{ solicitud.zona || 'Sin zona' }}</td>
+          <td>{{ solicitud.tipo_obra || solicitud.detalles || 'Por definir' }}</td>
+          <td>
+            <span [class]="'estado-tabla estado-' + solicitud.estado">
+              {{ solicitud.estado }}
+            </span>
+          </td>
+          <td>{{ solicitud.contacto_preferido || 'Por definir' }}</td>
+          <td>
+            <div class="acciones">
+              <a class="boton ver" [routerLink]="['/solicitudes', solicitud.id]">Ver detalle</a>
+              <button
+                class="boton eliminar"
+                type="button"
+                [disabled]="eliminandoId() === solicitud.id"
+                (click)="eliminarSolicitud(solicitud)"
+              >
+                {{ eliminandoId() === solicitud.id ? 'Eliminando...' : 'Eliminar' }}
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </section>

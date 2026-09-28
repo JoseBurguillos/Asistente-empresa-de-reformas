@@ -1,1 +1,56 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --color-fondo: #f3f5f7;
+  --color-superficie: #ffffff;
+  --color-texto: #18212b;
+  --color-texto-suave: #66717e;
+  --color-linea: #dde3e8;
+  --color-marca: #17324d;
+  --color-marca-oscuro: #10273b;
+  --color-acento: #b47a3c;
+  --sombra-suave: 0 14px 40px rgb(22 42 61 / 8%);
+  --radio: 16px;
+  font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: var(--color-texto);
+  background: var(--color-fondo);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  min-height: 100%;
+  background: var(--color-fondo);
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(circle at top right, rgb(180 122 60 / 7%), transparent 32rem),
+    var(--color-fondo);
+  color: var(--color-texto);
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: rgb(180 122 60 / 22%);
+}
