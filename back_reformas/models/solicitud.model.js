@@ -81,13 +81,22 @@ const Solicitud = sequelize.define('Solicitud', {
   // Solo se guarda lo que diga el cliente.
   // El bot nunca calcula ni envía presupuestos.
   presupuesto: {
-    type: DataTypes.STRING(100),
+    type: DataTypes.DECIMAL(12, 2),
     allowNull: true,
-    defaultValue: null
+    defaultValue: null,
+    get() {
+      const valor = this.getDataValue('presupuesto');
+      return valor === null ? null : Number(valor);
+    }
   },
 
   fecha_inicio: {
     type: DataTypes.STRING(100),
+    allowNull: true
+  },
+
+  fecha_visita: {
+    type: DataTypes.DATE,
     allowNull: true
   },
 

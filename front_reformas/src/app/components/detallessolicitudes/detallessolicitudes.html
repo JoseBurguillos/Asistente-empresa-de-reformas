@@ -16,6 +16,66 @@
       </span>
     </header>
 
+    <article class="panel-gestion">
+      <div class="panel-gestion-cabecera">
+        <div>
+          <p class="etiqueta-panel">Gestión comercial</p>
+          <h2>Seguimiento de la solicitud</h2>
+        </div>
+        <p>Los mensajes se abren preparados en WhatsApp para revisarlos antes de enviarlos.</p>
+      </div>
+
+      <p class="resultado-gestion" *ngIf="mensajeGestion()">{{ mensajeGestion() }}</p>
+
+      <div class="pasos-gestion">
+        <section class="paso-gestion">
+          <span class="numero-paso">1</span>
+          <h3>Concertar visita</h3>
+          <label for="fecha-visita">Día y hora</label>
+          <input id="fecha-visita" type="datetime-local" [min]="fechaMinimaVisita" [(ngModel)]="fechaVisita" (change)="actualizarMensajeVisita(solicitud)" />
+          <label for="mensaje-visita">Mensaje</label>
+          <textarea id="mensaje-visita" rows="5" [(ngModel)]="mensajeVisita"></textarea>
+          <button type="button" [disabled]="procesando()" (click)="prepararVisita(solicitud)">
+            Guardar y abrir WhatsApp
+          </button>
+        </section>
+
+        <section class="paso-gestion">
+          <span class="numero-paso">2</span>
+          <h3>Aceptar solicitud</h3>
+          <p>Confirma internamente que el equipo acepta realizar este trabajo.</p>
+          <button
+            type="button"
+            class="boton-secundario"
+            [disabled]="procesando() || solicitudAceptada(solicitud.estado)"
+            (click)="aceptarSolicitud(solicitud)"
+          >
+            {{ solicitudAceptada(solicitud.estado) ? 'Solicitud aceptada' : 'Aceptar solicitud' }}
+          </button>
+          <button
+            type="button"
+            class="boton-completar"
+            [disabled]="procesando() || solicitud.estado === 'completada' || !solicitudAceptada(solicitud.estado)"
+            (click)="completarSolicitud(solicitud)"
+          >
+            {{ solicitud.estado === 'completada' ? 'Obra completada' : 'Marcar como completada' }}
+          </button>
+        </section>
+
+        <section class="paso-gestion">
+          <span class="numero-paso">3</span>
+          <h3>Enviar presupuesto</h3>
+          <label for="importe-presupuesto">Importe o resumen</label>
+          <input id="importe-presupuesto" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="Ej. 4850" [(ngModel)]="importePresupuesto" (input)="actualizarMensajePresupuesto(solicitud)" />
+          <label for="mensaje-presupuesto">Mensaje</label>
+          <textarea id="mensaje-presupuesto" rows="5" [(ngModel)]="mensajePresupuesto"></textarea>
+          <button type="button" [disabled]="procesando()" (click)="prepararPresupuesto(solicitud)">
+            Guardar y abrir WhatsApp
+          </button>
+        </section>
+      </div>
+    </article>
+
     <div class="rejilla">
       <article class="tarjeta">
         <h2>Datos del cliente</h2>
@@ -38,7 +98,8 @@
           <div><dt>Medidas</dt><dd>{{ solicitud.medidas || 'No indicadas' }}</dd></div>
           <div><dt>Vivienda habitada</dt><dd>{{ formatearTexto(solicitud.vivienda_habitada) }}</dd></div>
           <div><dt>Fecha orientativa</dt><dd>{{ solicitud.fecha_inicio || 'No indicada' }}</dd></div>
-          <div><dt>Presupuesto</dt><dd>{{ solicitud.presupuesto || 'Pendiente de valoración' }}</dd></div>
+          <div><dt>Visita concertada</dt><dd>{{ solicitud.fecha_visita ? (solicitud.fecha_visita | date:'dd/MM/yyyy HH:mm') : 'Pendiente' }}</dd></div>
+          <div><dt>Presupuesto</dt><dd>{{ solicitud.presupuesto !== null ? ((solicitud.presupuesto | number:'1.2-2') + ' €') : 'Pendiente de valoración' }}</dd></div>
         </dl>
       </article>
 

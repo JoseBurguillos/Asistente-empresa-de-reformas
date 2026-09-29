@@ -1,12 +1,13 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Solicitud } from '../../interfaces/solicitud';
 import { SolicitudesService } from '../../services/solicitudes';
 
 @Component({
   selector: 'app-solicitudesadmin',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './solicitudesadmin.html',
   styleUrl: './solicitudesadmin.scss',
 })
@@ -17,9 +18,50 @@ export class Solicitudesadmin implements OnInit {
   cargando = signal(true);
   error = signal('');
   eliminandoId = signal<number | null>(null);
+  busqueda = signal('');
+  filtroEstado = signal('');
+  filtroContacto = signal('');
+
+  readonly estadosDisponibles = [
+    { valor: 'nueva', etiqueta: 'Nueva' },
+    { valor: 'en_revision', etiqueta: 'En revisión' },
+    { valor: 'visita_programada', etiqueta: 'Visita programada' },
+    { valor: 'aceptada', etiqueta: 'Aceptada' },
+    { valor: 'presupuesto_preparado', etiqueta: 'Presupuesto preparado' },
+    { valor: 'rechazada', etiqueta: 'Rechazada' },
+    { valor: 'cancelada', etiqueta: 'Cancelada' },
+    { valor: 'completada', etiqueta: 'Completada' }
+  ];
+
+  solicitudesFiltradas = computed(() => {
+    const textoOriginal = this.busqueda();
+    const busqueda = this.normalizar(textoOriginal);
+    const consultaTelefono = textoOriginal.replace(/\D/g, '');
+    const estado = this.filtroEstado();
+    const contacto = this.filtroContacto();
+
+    return this.solicitudes().filter((solicitud) => {
+      const nombre = this.normalizar(solicitud.cliente.nombre || '');
+      const telefono = String(solicitud.cliente.telefono || '').replace(/\D/g, '');
+      const coincideBusqueda = !busqueda || nombre.includes(busqueda) || (!!consultaTelefono && telefono.includes(consultaTelefono));
+      const coincideEstado = !estado || solicitud.estado === estado;
+      const coincideContacto = !contacto || solicitud.contacto_preferido === contacto;
+      return coincideBusqueda && coincideEstado && coincideContacto;
+    });
+  });
 
   ngOnInit(): void {
     this.cargarSolicitudes();
+  }
+
+  limpiarFiltros(): void {
+    this.busqueda.set('');
+    this.filtroEstado.set('');
+    this.filtroContacto.set('');
+  }
+
+  private normalizar(valor: string): string {
+    return valor.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
   }
 
   cargarSolicitudes(): void {

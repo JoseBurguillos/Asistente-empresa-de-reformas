@@ -385,3 +385,35 @@ td.cliente {
     animation-iteration-count: 1 !important;
   }
 }
+
+.estado-visita_programada,
+.estado-presupuesto_preparado {
+  border-color: #ead2a2;
+  background: #fff8e8;
+  color: #805b16;
+}
+
+
+.filtros {
+  display: grid;
+  grid-template-columns: minmax(240px, 1.6fr) minmax(170px, .8fr) minmax(170px, .8fr) auto;
+  gap: 14px;
+  align-items: end;
+  margin-bottom: 18px;
+  padding: 18px;
+  border: 1px solid #dce4ea;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 9px 28px rgb(22 42 61 / 6%);
+}
+.filtros label { display: grid; gap: 7px; }
+.filtros label span { color: #526373; font-size: .76rem; font-weight: 740; }
+.filtros input,
+.filtros select { width: 100%; box-sizing: border-box; min-height: 42px; padding: 9px 11px; border: 1px solid #cdd8e0; border-radius: 9px; background: #fff; color: #263746; font: inherit; font-size: .86rem; }
+.filtros input:focus,
+.filtros select:focus { border-color: #39708d; outline: 3px solid rgb(57 112 141 / 13%); }
+.limpiar-filtros { min-height: 42px; padding: 9px 14px; border: 1px solid #c7d2da; border-radius: 9px; background: #f5f8fa; color: #29445b; cursor: pointer; font-weight: 720; }
+.limpiar-filtros:hover { border-color: #8298a9; background: #edf3f6; }
+.sin-resultados { padding: 28px; border: 1px dashed #cbd6de; border-radius: 14px; color: #647482; text-align: center; }
+@media (max-width: 900px) { .filtros { grid-template-columns: 1fr 1fr; } .buscador { grid-column: 1 / -1; } }
+@media (max-width: 560px) { .filtros { grid-template-columns: 1fr; } .buscador { grid-column: auto; } }

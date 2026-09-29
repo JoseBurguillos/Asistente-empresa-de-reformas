@@ -114,6 +114,7 @@ const actualizarSolicitud = async (req, res, next) => {
       'fotos_estado_actual',
       'fotos_referencia',
       'fecha_inicio',
+      'fecha_visita',
       'detalles',
       'drive_folder_id',
       'notas_internas',
@@ -123,9 +124,23 @@ const actualizarSolicitud = async (req, res, next) => {
     const cambios = {};
 
     for (const campo of camposPermitidos) {
-      if (req.body[campo] !== undefined) {
-        cambios[campo] = req.body[campo];
+      if (req.body[campo] === undefined) continue;
+
+      if (campo === 'presupuesto') {
+        const presupuesto = Number(req.body[campo]);
+
+        if (!Number.isFinite(presupuesto) || presupuesto <= 0) {
+          return res.status(400).json({
+            ok: false,
+            error: 'El presupuesto debe ser un número mayor que cero'
+          });
+        }
+
+        cambios[campo] = Math.round(presupuesto * 100) / 100;
+        continue;
       }
+
+      cambios[campo] = req.body[campo];
     }
 
     await solicitud.update(cambios);
