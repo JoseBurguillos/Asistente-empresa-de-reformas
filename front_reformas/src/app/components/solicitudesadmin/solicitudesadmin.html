@@ -22,7 +22,34 @@
     <p>Cuando un cliente confirme una solicitud por WhatsApp, aparecerá aquí.</p>
   </div>
 
-  <div class="tabla-contenedor" *ngIf="!cargando() && !error() && solicitudes().length > 0">
+  <section class="filtros" *ngIf="!cargando() && !error() && solicitudes().length > 0" aria-label="Filtros de solicitudes">
+    <label class="buscador">
+      <span>Buscar cliente</span>
+      <input type="search" placeholder="Nombre o teléfono" [ngModel]="busqueda()" (ngModelChange)="busqueda.set($event)" />
+    </label>
+    <label>
+      <span>Estado</span>
+      <select [ngModel]="filtroEstado()" (ngModelChange)="filtroEstado.set($event)">
+        <option value="">Todos los estados</option>
+        <option *ngFor="let estado of estadosDisponibles" [value]="estado.valor">{{ estado.etiqueta }}</option>
+      </select>
+    </label>
+    <label>
+      <span>Contacto</span>
+      <select [ngModel]="filtroContacto()" (ngModelChange)="filtroContacto.set($event)">
+        <option value="">WhatsApp y email</option>
+        <option value="whatsapp">WhatsApp</option>
+        <option value="email">Email</option>
+      </select>
+    </label>
+    <button type="button" class="limpiar-filtros" (click)="limpiarFiltros()">Limpiar filtros</button>
+  </section>
+
+  <p class="sin-resultados" *ngIf="!cargando() && !error() && solicitudes().length > 0 && solicitudesFiltradas().length === 0">
+    No hay solicitudes que coincidan con la búsqueda y los filtros.
+  </p>
+
+  <div class="tabla-contenedor" *ngIf="!cargando() && !error() && solicitudesFiltradas().length > 0">
     <table>
       <thead>
         <tr>
@@ -36,7 +63,7 @@
       </thead>
 
       <tbody>
-        <tr *ngFor="let solicitud of solicitudes()">
+        <tr *ngFor="let solicitud of solicitudesFiltradas()">
           <td class="cliente">{{ solicitud.cliente.nombre || 'Sin nombre' }}</td>
           <td>{{ solicitud.zona || 'Sin zona' }}</td>
           <td>{{ solicitud.tipo_obra || solicitud.detalles || 'Por definir' }}</td>

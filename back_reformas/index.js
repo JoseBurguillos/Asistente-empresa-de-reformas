@@ -55,6 +55,13 @@ async function aplicarMigraciones() {
       allowNull: true
     });
   }
+
+  if (!columnas.fecha_visita) {
+    await queryInterface.addColumn('solicitudes', 'fecha_visita', {
+      type: DataTypes.DATE,
+      allowNull: true
+    });
+  }
 }
 
 async function iniciarServidor() {

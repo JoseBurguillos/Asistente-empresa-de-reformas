@@ -26,8 +26,9 @@ export interface Solicitud {
   contacto_preferido: string | null;
   fotos_estado_actual: string | null;
   fotos_referencia: string | null;
-  presupuesto: string | null;
+  presupuesto: number | null;
   fecha_inicio: string | null;
+  fecha_visita: string | null;
   detalles: string | null;
   drive_folder_id: string | null;
   notas_internas: string | null;
