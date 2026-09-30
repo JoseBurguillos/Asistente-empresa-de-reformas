@@ -1,0 +1,22 @@
+<main class="pagina-login">
+  <section class="tarjeta-login">
+    <div class="marca" aria-hidden="true">R</div>
+    <p class="etiqueta">Panel privado</p>
+    <h1>Gestión de reformas</h1>
+    <p class="descripcion">Accede para revisar solicitudes, concertar visitas y gestionar presupuestos.</p>
+
+    <form (ngSubmit)="entrar()">
+      <label for="usuario">Usuario</label>
+      <input id="usuario" name="usuario" type="text" autocomplete="username" [(ngModel)]="usuario" />
+
+      <label for="contrasena">Contraseña</label>
+      <input id="contrasena" name="contrasena" type="password" autocomplete="current-password" [(ngModel)]="contrasena" />
+
+      <p class="error" role="alert" [hidden]="!error()">{{ error() }}</p>
+
+      <button type="submit" [disabled]="cargando()">
+        {{ cargando() ? 'Accediendo…' : 'Iniciar sesión' }}
+      </button>
+    </form>
+  </section>
+</main>

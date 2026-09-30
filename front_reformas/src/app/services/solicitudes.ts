@@ -14,12 +14,13 @@ export class SolicitudesService {
   private readonly apiUrl = 'http://localhost:3001/api/solicitudes';
 
   obtenerSolicitudes(): Observable<RespuestaSolicitudes> {
-    return this.http.get<RespuestaSolicitudes>(this.apiUrl);
+    return this.http.get<RespuestaSolicitudes>(this.apiUrl, { withCredentials: true });
   }
 
   obtenerSolicitud(id: number): Observable<{ ok: boolean; solicitud: Solicitud }> {
     return this.http.get<{ ok: boolean; solicitud: Solicitud }>(
-      `${this.apiUrl}/${id}`
+      `${this.apiUrl}/${id}`,
+      { withCredentials: true }
     );
   }
 
@@ -29,13 +30,15 @@ export class SolicitudesService {
   ): Observable<{ ok: boolean; solicitud: Solicitud }> {
     return this.http.patch<{ ok: boolean; solicitud: Solicitud }>(
       `${this.apiUrl}/${id}`,
-      cambios
+      cambios,
+      { withCredentials: true }
     );
   }
 
   eliminarSolicitud(id: number): Observable<{ ok: boolean; mensaje: string }> {
     return this.http.delete<{ ok: boolean; mensaje: string }>(
-      `${this.apiUrl}/${id}`
+      `${this.apiUrl}/${id}`,
+      { withCredentials: true }
     );
   }
 }

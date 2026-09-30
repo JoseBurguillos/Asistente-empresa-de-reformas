@@ -1,9 +1,10 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Solicitud } from '../../interfaces/solicitud';
 import { SolicitudesService } from '../../services/solicitudes';
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-solicitudesadmin',
@@ -13,6 +14,8 @@ import { SolicitudesService } from '../../services/solicitudes';
 })
 export class Solicitudesadmin implements OnInit {
   private readonly solicitudesService = inject(SolicitudesService);
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
 
   solicitudes = signal<Solicitud[]>([]);
   cargando = signal(true);
@@ -52,6 +55,13 @@ export class Solicitudesadmin implements OnInit {
 
   ngOnInit(): void {
     this.cargarSolicitudes();
+  }
+
+  cerrarSesion(): void {
+    this.auth.cerrarSesion().subscribe({
+      next: () => this.router.navigateByUrl('/login'),
+      error: () => this.router.navigateByUrl('/login')
+    });
   }
 
   limpiarFiltros(): void {

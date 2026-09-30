@@ -5,6 +5,7 @@ const Solicitud = require('./solicitud.model');
 const Foto = require('./foto.model');
 const DisenoIA = require('./diseno-ia.model');
 const CorreccionIA = require('./correccion-ia.model');
+const Usuario = require('./usuario.model');
 
 // Un cliente puede tener muchas solicitudes de reforma
 Cliente.hasMany(Solicitud, {
@@ -45,5 +46,6 @@ module.exports = {
   Solicitud,
   Foto,
   DisenoIA,
-  CorreccionIA
+  CorreccionIA,
+  Usuario
 };
