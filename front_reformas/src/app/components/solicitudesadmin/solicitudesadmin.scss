@@ -417,3 +417,6 @@ td.cliente {
 .sin-resultados { padding: 28px; border: 1px dashed #cbd6de; border-radius: 14px; color: #647482; text-align: center; }
 @media (max-width: 900px) { .filtros { grid-template-columns: 1fr 1fr; } .buscador { grid-column: 1 / -1; } }
 @media (max-width: 560px) { .filtros { grid-template-columns: 1fr; } .buscador { grid-column: auto; } }
+
+.acciones-cabecera { display: flex; gap: 10px; }
+.cabecera .cerrar-sesion { border: 1px solid rgb(255 255 255 / 28%); background: transparent; }
