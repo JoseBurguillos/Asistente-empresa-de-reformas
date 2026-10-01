@@ -1,5 +1,11 @@
 <main class="pagina-detalle">
-  <a class="volver" routerLink="/">← Volver a solicitudes</a>
+  <header class="topbar">
+    <a class="marca" routerLink="/" aria-label="Volver al panel">
+      <span class="marca-icono" aria-hidden="true"><i></i><i></i></span>
+      <span><strong>REFORMA</strong><small>panel de obra</small></span>
+    </a>
+    <a class="volver" routerLink="/"><span aria-hidden="true">←</span> Volver a solicitudes</a>
+  </header>
 
   <p class="mensaje" *ngIf="cargando()">Cargando solicitud...</p>
   <p class="mensaje error" *ngIf="error()">{{ error() }}</p>
@@ -7,7 +13,7 @@
   <section *ngIf="solicitud() as solicitud" class="detalle">
     <header class="cabecera-detalle">
       <div>
-        <p class="referencia">Solicitud #{{ solicitud.id }}</p>
+        <p class="referencia"><span>Expediente de obra</span> Solicitud #{{ solicitud.id }}</p>
         <h1>{{ solicitud.cliente.nombre || 'Cliente sin nombre' }}</h1>
         <p>{{ solicitud.detalles || 'Solicitud sin descripción' }}</p>
       </div>
@@ -16,10 +22,21 @@
       </span>
     </header>
 
+    <section class="ruta-obra" aria-label="Progreso de la solicitud">
+      <div class="ruta-titulo"><span>Ruta de la obra</span><small>Seguimiento del expediente</small></div>
+      <ol>
+        <li class="hecho"><i>1</i><span>Solicitud<small>Recibida</small></span></li>
+        <li [class.hecho]="solicitud.estado !== 'nueva'"><i>2</i><span>Revisión<small>Valoración</small></span></li>
+        <li [class.hecho]="solicitud.fecha_visita"><i>3</i><span>Visita<small>Concertada</small></span></li>
+        <li [class.hecho]="solicitudAceptada(solicitud.estado)"><i>4</i><span>Presupuesto<small>Aprobación</small></span></li>
+        <li [class.hecho]="solicitud.estado === 'completada'"><i>5</i><span>Obra<small>Completada</small></span></li>
+      </ol>
+    </section>
+
     <article class="panel-gestion">
       <div class="panel-gestion-cabecera">
         <div>
-          <p class="etiqueta-panel">Gestión comercial</p>
+          <p class="etiqueta-panel">Mesa de trabajo</p>
           <h2>Seguimiento de la solicitud</h2>
         </div>
         <p>Los mensajes se abren preparados en WhatsApp para revisarlos antes de enviarlos.</p>
@@ -28,7 +45,7 @@
       <p class="resultado-gestion" *ngIf="mensajeGestion()">{{ mensajeGestion() }}</p>
 
       <div class="pasos-gestion">
-        <section class="paso-gestion">
+        <section class="paso-gestion paso-visita">
           <span class="numero-paso">1</span>
           <h3>Concertar visita</h3>
           <label for="fecha-visita">Día y hora</label>
@@ -40,7 +57,7 @@
           </button>
         </section>
 
-        <section class="paso-gestion">
+        <section class="paso-gestion paso-aceptar">
           <span class="numero-paso">2</span>
           <h3>Aceptar solicitud</h3>
           <p>Confirma internamente que el equipo acepta realizar este trabajo.</p>
@@ -62,7 +79,7 @@
           </button>
         </section>
 
-        <section class="paso-gestion">
+        <section class="paso-gestion paso-presupuesto">
           <span class="numero-paso">3</span>
           <h3>Enviar presupuesto</h3>
           <label for="importe-presupuesto">Importe o resumen</label>
@@ -78,7 +95,7 @@
 
     <div class="rejilla">
       <article class="tarjeta">
-        <h2>Datos del cliente</h2>
+        <h2><span aria-hidden="true">01</span> Datos del cliente</h2>
         <dl>
           <div><dt>Nombre</dt><dd>{{ solicitud.cliente.nombre || 'No indicado' }}</dd></div>
           <div><dt>Teléfono</dt><dd>{{ solicitud.cliente.telefono }}</dd></div>
@@ -89,7 +106,7 @@
       </article>
 
       <article class="tarjeta">
-        <h2>Características de la obra</h2>
+        <h2><span aria-hidden="true">02</span> Características de la obra</h2>
         <dl>
           <div><dt>Zona</dt><dd>{{ solicitud.zona || 'No indicada' }}</dd></div>
           <div><dt>Tipo de proyecto</dt><dd>{{ formatearTexto(solicitud.tipo_proyecto, 'Por definir') }}</dd></div>
@@ -104,12 +121,12 @@
       </article>
 
       <article class="tarjeta ancho-completo">
-        <h2>Descripción</h2>
+        <h2><span aria-hidden="true">03</span> Memoria de la actuación</h2>
         <p>{{ solicitud.detalles || 'No se han añadido detalles.' }}</p>
       </article>
 
       <article class="tarjeta">
-        <h2>Seguimiento</h2>
+        <h2><span aria-hidden="true">04</span> Seguimiento</h2>
         <dl>
           <div><dt>Canal de entrada</dt><dd>{{ formatearTexto(solicitud.canal_origen) }}</dd></div>
           <div><dt>Creada</dt><dd>{{ solicitud.created_at | date:'dd/MM/yyyy HH:mm' }}</dd></div>
@@ -119,7 +136,7 @@
       </article>
 
       <article class="tarjeta">
-        <h2>Fotos ({{ solicitud.fotos.length }})</h2>
+        <h2><span aria-hidden="true">05</span> Archivo visual <b>{{ solicitud.fotos.length }}</b></h2>
 
         <dl>
           <div><dt>Estado actual</dt><dd>{{ formatearTexto(solicitud.fotos_estado_actual) }}</dd></div>

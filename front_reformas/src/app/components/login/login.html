@@ -1,22 +1,65 @@
 <main class="pagina-login">
-  <section class="tarjeta-login">
-    <div class="marca" aria-hidden="true">R</div>
-    <p class="etiqueta">Panel privado</p>
-    <h1>Gestión de reformas</h1>
-    <p class="descripcion">Accede para revisar solicitudes, concertar visitas y gestionar presupuestos.</p>
+  <section class="escena-obra" aria-label="Panel de gestión de reformas">
+    <div class="marca">
+      <span class="marca-simbolo" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span><strong>REFORMA</strong><small>gestión de obra</small></span>
+    </div>
 
-    <form (ngSubmit)="entrar()">
-      <label for="usuario">Usuario</label>
-      <input id="usuario" name="usuario" type="text" autocomplete="username" [(ngModel)]="usuario" />
+    <div class="mensaje-portada">
+      <p class="eyebrow"><span></span> Del primer contacto a la entrega</p>
+      <h1>Cada gran espacio empieza con un buen <em>plan.</em></h1>
+      <p>Solicitudes, visitas y presupuestos reunidos en un espacio de trabajo claro para todo el equipo.</p>
 
-      <label for="contrasena">Contraseña</label>
-      <input id="contrasena" name="contrasena" type="password" autocomplete="current-password" [(ngModel)]="contrasena" />
+      <div class="hitos" aria-hidden="true">
+        <span><b>01</b> Solicitud</span>
+        <span><b>02</b> Visita</span>
+        <span><b>03</b> Obra</span>
+      </div>
+    </div>
 
-      <p class="error" role="alert" [hidden]="!error()">{{ error() }}</p>
+    <div class="plano" aria-hidden="true">
+      <span class="cota cota-a">4.80 m</span>
+      <span class="cota cota-b">3.20 m</span>
+      <span class="estancia estancia-a">SALÓN</span>
+      <span class="estancia estancia-b">COCINA</span>
+      <i class="muro muro-a"></i><i class="muro muro-b"></i><i class="muro muro-c"></i>
+      <i class="puerta"></i>
+    </div>
 
-      <button type="submit" [disabled]="cargando()">
-        {{ cargando() ? 'Accediendo…' : 'Iniciar sesión' }}
-      </button>
-    </form>
+    <p class="version">Panel profesional · v1.0</p>
+  </section>
+
+  <section class="acceso">
+    <div class="tarjeta-login">
+      <div class="icono-casco" aria-hidden="true">
+        <span></span>
+      </div>
+      <p class="etiqueta">Zona de equipo</p>
+      <h2>Bienvenido de nuevo</h2>
+      <p class="descripcion">Accede al panel para continuar con las obras en curso.</p>
+
+      <form (ngSubmit)="entrar()">
+        <label for="usuario">Usuario</label>
+        <div class="campo">
+          <span aria-hidden="true">&#9675;</span>
+          <input id="usuario" name="usuario" type="text" autocomplete="username" placeholder="Tu usuario" [(ngModel)]="usuario" />
+        </div>
+
+        <label for="contrasena">Contraseña</label>
+        <div class="campo">
+          <span aria-hidden="true">&#9671;</span>
+          <input id="contrasena" name="contrasena" type="password" autocomplete="current-password" placeholder="Tu contraseña" [(ngModel)]="contrasena" />
+        </div>
+
+        <p class="error" role="alert" [hidden]="!error()">{{ error() }}</p>
+
+        <button type="submit" [disabled]="cargando()">
+          <span>{{ cargando() ? 'Accediendo…' : 'Entrar al panel' }}</span>
+          <b aria-hidden="true">&#8594;</b>
+        </button>
+      </form>
+
+      <p class="ayuda"><span aria-hidden="true"></span> Acceso exclusivo para el equipo de reformas</p>
+    </div>
   </section>
 </main>

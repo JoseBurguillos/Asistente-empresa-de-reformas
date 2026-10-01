@@ -53,6 +53,16 @@ export class Solicitudesadmin implements OnInit {
     });
   });
 
+  resumen = computed(() => {
+    const solicitudes = this.solicitudes();
+    return {
+      total: solicitudes.length,
+      nuevas: solicitudes.filter((item) => item.estado === 'nueva').length,
+      activas: solicitudes.filter((item) => ['en_revision', 'visita_programada', 'aceptada', 'presupuesto_preparado'].includes(item.estado)).length,
+      completadas: solicitudes.filter((item) => item.estado === 'completada').length
+    };
+  });
+
   ngOnInit(): void {
     this.cargarSolicitudes();
   }
@@ -72,6 +82,22 @@ export class Solicitudesadmin implements OnInit {
 
   private normalizar(valor: string): string {
     return valor.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+  }
+
+  etiquetaEstado(estado: string): string {
+    return this.estadosDisponibles.find((item) => item.valor === estado)?.etiqueta
+      || estado.replaceAll('_', ' ');
+  }
+
+  etiquetaProyecto(valor: string | null): string {
+    if (!valor) return 'Trabajo por definir';
+    const texto = valor.replaceAll('_', ' ');
+    return texto.charAt(0).toUpperCase() + texto.slice(1);
+  }
+
+  iniciales(nombre: string | null): string {
+    const valor = (nombre || 'Cliente').trim();
+    return valor.split(/\s+/).slice(0, 2).map((parte) => parte[0]).join('').toUpperCase();
   }
 
   cargarSolicitudes(): void {

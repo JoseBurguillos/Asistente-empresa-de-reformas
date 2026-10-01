@@ -84,7 +84,10 @@ export class Detallessolicitudes implements OnInit {
     }
 
     this.importePresupuesto = solicitud.presupuesto === null ? null : Number(solicitud.presupuesto);
-    this.mensajeVisita = this.crearMensajeVisita(solicitud);
+    this.mensajeVisita = this.crearMensajeVisita(
+      solicitud,
+      solicitud.fecha_visita ? new Date(solicitud.fecha_visita) : undefined
+    );
     this.mensajePresupuesto = this.crearMensajePresupuesto(solicitud);
   }
 
