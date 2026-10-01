@@ -114,7 +114,7 @@
           <div><dt>Estancia</dt><dd>{{ formatearTexto(solicitud.estancia) }}</dd></div>
           <div><dt>Medidas</dt><dd>{{ solicitud.medidas || 'No indicadas' }}</dd></div>
           <div><dt>Vivienda habitada</dt><dd>{{ formatearTexto(solicitud.vivienda_habitada) }}</dd></div>
-          <div><dt>Fecha orientativa</dt><dd>{{ solicitud.fecha_inicio || 'No indicada' }}</dd></div>
+          <div><dt>Fecha orientativa</dt><dd>{{ solicitud.fecha_orientativa || 'No indicada' }}</dd></div>
           <div><dt>Visita concertada</dt><dd>{{ solicitud.fecha_visita ? (solicitud.fecha_visita | date:'dd/MM/yyyy HH:mm') : 'Pendiente' }}</dd></div>
           <div><dt>Presupuesto</dt><dd>{{ solicitud.presupuesto !== null ? ((solicitud.presupuesto | number:'1.2-2') + ' €') : 'Pendiente de valoración' }}</dd></div>
         </dl>
