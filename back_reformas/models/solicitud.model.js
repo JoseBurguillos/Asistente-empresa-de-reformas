@@ -90,7 +90,7 @@ const Solicitud = sequelize.define('Solicitud', {
     }
   },
 
-  fecha_inicio: {
+  fecha_orientativa: {
     type: DataTypes.STRING(100),
     allowNull: true
   },

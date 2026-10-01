@@ -70,6 +70,21 @@ async function aplicarMigraciones() {
       allowNull: true
     });
   }
+
+  // Conserva los valores existentes al adoptar el nombre que se muestra
+  // al usuario en el chatbot y en el panel de gestión.
+  if (columnas.fecha_inicio && !columnas.fecha_orientativa) {
+    await queryInterface.renameColumn(
+      'solicitudes',
+      'fecha_inicio',
+      'fecha_orientativa'
+    );
+  } else if (!columnas.fecha_orientativa) {
+    await queryInterface.addColumn('solicitudes', 'fecha_orientativa', {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    });
+  }
 }
 
 async function crearAdminInicial() {

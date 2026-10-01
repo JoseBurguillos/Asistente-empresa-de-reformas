@@ -27,7 +27,7 @@ export interface Solicitud {
   fotos_estado_actual: string | null;
   fotos_referencia: string | null;
   presupuesto: number | null;
-  fecha_inicio: string | null;
+  fecha_orientativa: string | null;
   fecha_visita: string | null;
   detalles: string | null;
   drive_folder_id: string | null;

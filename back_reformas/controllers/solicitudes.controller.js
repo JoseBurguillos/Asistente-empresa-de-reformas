@@ -21,7 +21,7 @@ const crearSolicitud = async (req, res, next) => {
       contacto_preferido,
       fotos_estado_actual,
       fotos_referencia,
-      fecha_inicio,
+      fecha_orientativa,
       detalles,
       drive_folder_id,
       canal_origen
@@ -72,7 +72,7 @@ const crearSolicitud = async (req, res, next) => {
       contacto_preferido: contacto_preferido || null,
       fotos_estado_actual: fotos_estado_actual || null,
       fotos_referencia: fotos_referencia || null,
-      fecha_inicio: fecha_inicio || null,
+      fecha_orientativa: fecha_orientativa || null,
       detalles: detalles || null,
       drive_folder_id: drive_folder_id || null,
       canal_origen: canal_origen || 'whatsapp'
@@ -113,7 +113,7 @@ const actualizarSolicitud = async (req, res, next) => {
       'contacto_preferido',
       'fotos_estado_actual',
       'fotos_referencia',
-      'fecha_inicio',
+      'fecha_orientativa',
       'fecha_visita',
       'detalles',
       'drive_folder_id',
