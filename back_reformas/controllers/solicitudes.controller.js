@@ -115,6 +115,10 @@ const actualizarSolicitud = async (req, res, next) => {
       'fotos_referencia',
       'fecha_orientativa',
       'fecha_visita',
+      'visita_estado',
+      'visita_respuesta_cliente',
+      'visita_fechas_alternativas',
+      'visita_respuesta_at',
       'detalles',
       'drive_folder_id',
       'notas_internas',
@@ -234,6 +238,62 @@ const obtenerSolicitud = async (req, res, next) => {
   }
 };
 
+
+const registrarRespuestaVisita = async (req, res, next) => {
+  try {
+    const telefono = normalizarTelefono(req.body.telefono);
+    const solicitudId = Number(req.body.solicitud_id || 0);
+    const valorAceptada = req.body.aceptada;
+    const respuesta = String(req.body.respuesta || '').trim().slice(0, 1000);
+    const fechasAlternativas = String(req.body.fechas_alternativas || '').trim().slice(0, 1000);
+
+    if (!/^\d{8,15}$/.test(telefono)) {
+      return res.status(400).json({ ok: false, error: 'Teléfono inválido' });
+    }
+
+    if (![true, false, 'true', 'false'].includes(valorAceptada)) {
+      return res.status(400).json({ ok: false, error: 'aceptada debe ser true o false' });
+    }
+
+    const aceptada = valorAceptada === true || valorAceptada === 'true';
+    const where = { visita_estado: 'pendiente_respuesta' };
+    if (solicitudId > 0) where.id = solicitudId;
+
+    const solicitud = await Solicitud.findOne({
+      where,
+      include: [{
+        model: Cliente,
+        as: 'cliente',
+        where: { telefono },
+        attributes: ['id', 'telefono']
+      }],
+      order: [['updated_at', 'DESC']]
+    });
+
+    if (!solicitud) {
+      return res.status(404).json({
+        ok: false,
+        error: 'No existe una visita pendiente de respuesta para este cliente'
+      });
+    }
+
+    await solicitud.update({
+      visita_estado: aceptada ? 'confirmada' : 'rechazada',
+      visita_respuesta_cliente: respuesta || (aceptada ? 'Sí' : 'No'),
+      visita_fechas_alternativas: aceptada ? null : (fechasAlternativas || respuesta || null),
+      visita_respuesta_at: new Date()
+    });
+
+    res.json({
+      ok: true,
+      resultado: aceptada ? 'confirmada' : 'rechazada',
+      solicitud
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const eliminarSolicitud = async (req, res, next) => {
   try {
     const solicitudId = Number(req.params.id);
@@ -262,5 +322,6 @@ module.exports = {
   actualizarSolicitud,
   listarSolicitudes,
   obtenerSolicitud,
+  registrarRespuestaVisita,
   eliminarSolicitud
 };

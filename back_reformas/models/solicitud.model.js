@@ -100,6 +100,29 @@ const Solicitud = sequelize.define('Solicitud', {
     allowNull: true
   },
 
+  // Ciclo de confirmación de la cita enviada por WhatsApp.
+  // sin_programar | pendiente_respuesta | confirmada | rechazada
+  visita_estado: {
+    type: DataTypes.STRING(30),
+    allowNull: false,
+    defaultValue: 'sin_programar'
+  },
+
+  visita_respuesta_cliente: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+
+  visita_fechas_alternativas: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+
+  visita_respuesta_at: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
+
   detalles: {
     type: DataTypes.TEXT,
     allowNull: true

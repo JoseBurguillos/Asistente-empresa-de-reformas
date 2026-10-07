@@ -1,0 +1,49 @@
+<aside class="barra-lateral">
+  <div class="cabecera-movil">
+    <a class="marca" routerLink="/" (click)="cerrarMenu()" aria-label="Ir al panel de obra">
+      <span class="marca-icono" aria-hidden="true"><i></i><i></i></span>
+      <span><strong>REFORMA</strong><small>dirección de obra</small></span>
+    </a>
+
+    <button
+      type="button"
+      class="boton-menu"
+      [class.abierto]="menuAbierto()"
+      [attr.aria-expanded]="menuAbierto()"
+      aria-controls="navegacion-panel"
+      [attr.aria-label]="menuAbierto() ? 'Cerrar menú' : 'Abrir menú'"
+      (click)="alternarMenu()"
+    >
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <div id="navegacion-panel" class="panel-navegacion" [class.abierto]="menuAbierto()">
+    <nav aria-label="Navegación principal">
+      <a routerLink="/" [class.activo]="active === 'solicitudes'" [attr.aria-current]="active === 'solicitudes' ? 'page' : null" (click)="cerrarMenu()">
+        <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 5.5h16v13H4zM8 9h8M8 13h5"/></svg>
+        <span><strong>Solicitudes</strong><small>Expedientes de obra</small></span>
+      </a>
+      <a routerLink="/agenda" [class.activo]="active === 'agenda'" [attr.aria-current]="active === 'agenda' ? 'page' : null" (click)="cerrarMenu()">
+        <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 3v3M18 3v3M4 8h16M5 5h14v15H5z"/></svg>
+        <span><strong>Agenda</strong><small>Visitas programadas</small></span>
+      </a>
+      <a routerLink="/clientes" [class.activo]="active === 'clientes'" [attr.aria-current]="active === 'clientes' ? 'page' : null" (click)="cerrarMenu()">
+        <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M8 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM2 21v-2a6 6 0 0 1 12 0v2M17 11a3 3 0 1 0 0-6M17 14a5 5 0 0 1 5 5v2"/></svg>
+        <span><strong>Clientes</strong><small>Directorio y contacto</small></span>
+      </a>
+    </nav>
+
+    <div class="pie-navegacion">
+      <div class="estado-sistema">
+        <span aria-hidden="true"></span>
+        <div><strong>Sistema operativo</strong><small>Canales conectados</small></div>
+      </div>
+
+      <button type="button" class="cerrar-sesion" (click)="cerrarSesion()">
+        <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M10 5H5v14h5M14 8l4 4-4 4M18 12H9"/></svg>
+        <span>Cerrar sesión</span>
+      </button>
+    </div>
+  </div>
+</aside>

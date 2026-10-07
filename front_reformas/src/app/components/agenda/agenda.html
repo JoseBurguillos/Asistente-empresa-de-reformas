@@ -1,0 +1,126 @@
+<div class="app-shell">
+  <app-admin-nav active="agenda"></app-admin-nav>
+
+  <main class="contenido">
+    <header class="cabecera-superior">
+      <div>
+        <p class="miga">Panel de gestión <span>/</span> Agenda</p>
+        <h1>Agenda de visitas</h1>
+        <p>Consulta el mes completo y pulsa cualquier día para revisar sus citas.</p>
+      </div>
+      <div class="resumen-agenda" aria-label="Resumen de próximas visitas">
+        <strong>{{ proximasVisitas().length }}</strong>
+        <span>{{ proximasVisitas().length === 1 ? 'visita próxima' : 'visitas próximas' }}</span>
+      </div>
+    </header>
+
+    <p class="aviso" *ngIf="cargando()"><span class="indicador-carga" aria-hidden="true"></span> Preparando la agenda…</p>
+    <div class="aviso aviso-error" *ngIf="error()">
+      <span>{{ error() }}</span>
+      <button type="button" (click)="cargarVisitas()">Reintentar</button>
+    </div>
+
+    <section class="agenda" *ngIf="!cargando() && !error()">
+      <header class="barra-agenda">
+        <div>
+          <h2>{{ tituloMes() }}</h2>
+          <p>Vista mensual</p>
+        </div>
+        <div class="controles-mes" aria-label="Cambiar mes">
+          <button type="button" class="boton-hoy" (click)="irHoy()">Hoy</button>
+          <button type="button" class="boton-icono" (click)="cambiarMes(-1)" aria-label="Mes anterior">
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg>
+          </button>
+          <button type="button" class="boton-icono" (click)="cambiarMes(1)" aria-label="Mes siguiente">
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="agenda-layout">
+        <section class="calendario-mensual" aria-label="Calendario mensual">
+          <div class="cabecera-semana" aria-hidden="true">
+            <span *ngFor="let nombre of nombresSemana">{{ nombre }}</span>
+          </div>
+
+          <div class="cuadricula-mes" [attr.aria-label]="tituloMes()">
+            <button
+              *ngFor="let dia of diasMes()"
+              type="button"
+              class="dia-mes"
+              [class.fuera-mes]="!dia.esMesActual"
+              [class.hoy]="dia.esHoy"
+              [class.seleccionado]="dia.clave === diaSeleccionado()"
+              [class.con-visitas]="dia.visitas.length > 0"
+              [attr.aria-label]="etiquetaDia(dia)"
+              [attr.aria-pressed]="dia.clave === diaSeleccionado()"
+              (click)="seleccionarDia(dia)"
+            >
+              <span class="numero-dia">{{ dia.numero }}</span>
+              <span class="contador-dia" *ngIf="dia.visitas.length > 0">{{ dia.visitas.length }}</span>
+
+              <span class="eventos-dia" *ngIf="dia.visitas.length > 0">
+                <span class="evento-preview" *ngFor="let visita of dia.visitas.slice(0, 2)">
+                  <i aria-hidden="true"></i>
+                  <time>{{ horaVisita(visita) }}</time>
+                  <strong>{{ visita.cliente.nombre || 'Cliente' }}</strong>
+                </span>
+                <small *ngIf="dia.visitas.length > 2">+{{ dia.visitas.length - 2 }} más</small>
+              </span>
+            </button>
+          </div>
+        </section>
+
+        <aside class="detalle-dia" aria-labelledby="titulo-dia" aria-live="polite">
+          <header>
+            <span class="fecha-grande" aria-hidden="true">{{ fechaSeleccionada().getDate() }}</span>
+            <div>
+              <h2 id="titulo-dia">{{ fechaLarga() }}</h2>
+              <p>{{ visitasDia().length === 0 ? 'Sin visitas programadas' : (visitasDia().length + (visitasDia().length === 1 ? ' visita programada' : ' visitas programadas')) }}</p>
+            </div>
+          </header>
+
+          <div class="sin-visitas" *ngIf="visitasDia().length === 0">
+            <span aria-hidden="true"></span>
+            <h3>Día libre</h3>
+            <p>Selecciona una fecha marcada para consultar los datos de la visita.</p>
+          </div>
+
+          <ol class="lista-visitas" *ngIf="visitasDia().length > 0">
+            <li *ngFor="let visita of visitasDia()">
+              <article [class]="'visita visita-' + visita.visita_estado">
+                <div class="hora-visita">
+                  <time>{{ horaVisita(visita) }}</time>
+                  <span [class]="'estado estado-' + visita.visita_estado">{{ estadoVisita(visita) }}</span>
+                </div>
+
+                <div class="datos-visita">
+                  <h3>{{ visita.cliente.nombre || 'Cliente sin nombre' }}</h3>
+                  <p>{{ visita.tipo_obra ? visita.tipo_obra.replaceAll('_', ' ') : 'Trabajo por definir' }}</p>
+                  <dl>
+                    <div>
+                      <dt>Zona</dt>
+                      <dd>{{ visita.zona || 'Sin indicar' }}</dd>
+                    </div>
+                    <div>
+                      <dt>Contacto</dt>
+                      <dd>{{ visita.contacto_preferido || 'WhatsApp' }}</dd>
+                    </div>
+                  </dl>
+                  <p class="respuesta-cliente" *ngIf="visita.visita_respuesta_cliente">
+                    Respuesta: {{ visita.visita_respuesta_cliente }}
+                  </p>
+                </div>
+
+                <a [routerLink]="['/solicitudes', visita.id]" [attr.aria-label]="'Abrir expediente de ' + (visita.cliente.nombre || 'cliente')">
+                  Abrir expediente
+                  <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M14 7l5 5-5 5"/></svg>
+                </a>
+              </article>
+            </li>
+          </ol>
+        </aside>
+      </div>
+    </section>
+  </main>
+</div>

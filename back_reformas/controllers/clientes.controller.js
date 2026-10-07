@@ -1,6 +1,37 @@
 const { Op } = require('sequelize');
 const { Cliente, Solicitud } = require('../models');
 
+const listarClientes = async (_req, res, next) => {
+  try {
+    const clientes = await Cliente.findAll({
+      attributes: ['id', 'telefono', 'nombre', 'email', 'idioma', 'created_at', 'updated_at'],
+      include: [{
+        model: Solicitud,
+        as: 'solicitudes',
+        attributes: [
+          'id',
+          'estado',
+          'tipo_proyecto',
+          'tipo_obra',
+          'zona',
+          'contacto_preferido',
+          'created_at',
+          'updated_at'
+        ],
+        required: false
+      }],
+      order: [
+        ['updated_at', 'DESC'],
+        [{ model: Solicitud, as: 'solicitudes' }, 'updated_at', 'DESC']
+      ]
+    });
+
+    res.json({ ok: true, clientes });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const obtenerContextoCliente = async (req, res, next) => {
   try {
     const telefono = String(req.params.telefono || '').replace(/\D/g, '');
@@ -21,7 +52,7 @@ const obtenerContextoCliente = async (req, res, next) => {
         // Estas son las solicitudes que el equipo todavía gestiona.
         where: {
           estado: {
-            [Op.in]: ['nueva', 'en_revision', 'aceptada']
+            [Op.in]: ['nueva', 'en_revision', 'visita_programada', 'aceptada', 'presupuesto_preparado']
           }
         },
 
@@ -60,5 +91,6 @@ const obtenerContextoCliente = async (req, res, next) => {
 };
 
 module.exports = {
+  listarClientes,
   obtenerContextoCliente
 };

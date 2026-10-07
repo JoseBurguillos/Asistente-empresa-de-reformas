@@ -39,10 +39,38 @@
           <p class="etiqueta-panel">Mesa de trabajo</p>
           <h2>Seguimiento de la solicitud</h2>
         </div>
-        <p>Los mensajes se abren preparados en WhatsApp para revisarlos antes de enviarlos.</p>
+        <p>Los mensajes se preparan en el canal que eligió el cliente para que puedas revisarlos antes de enviarlos.</p>
       </div>
 
       <p class="resultado-gestion" *ngIf="mensajeGestion()">{{ mensajeGestion() }}</p>
+
+      <section
+        *ngIf="solicitud.visita_estado !== 'sin_programar'"
+        [class]="'respuesta-visita respuesta-visita-' + solicitud.visita_estado"
+        aria-live="polite"
+      >
+        <div>
+          <span class="respuesta-visita-icono" aria-hidden="true"></span>
+          <div>
+            <p class="etiqueta-panel">Respuesta del cliente</p>
+            <h3 *ngIf="solicitud.visita_estado === 'pendiente_respuesta'">Esperando confirmación de la visita</h3>
+            <h3 *ngIf="solicitud.visita_estado === 'confirmada'">El cliente ha confirmado la visita</h3>
+            <h3 *ngIf="solicitud.visita_estado === 'rechazada'">El cliente necesita otra fecha</h3>
+          </div>
+        </div>
+        <p *ngIf="solicitud.visita_estado === 'pendiente_respuesta'">
+          La propuesta ya se preparó por {{ nombreCanal(solicitud) }}. El panel mostrará aquí su contestación.
+        </p>
+        <p *ngIf="solicitud.visita_respuesta_cliente">
+          <strong>Respuesta:</strong> {{ solicitud.visita_respuesta_cliente }}
+        </p>
+        <p *ngIf="solicitud.visita_estado === 'rechazada' && solicitud.visita_fechas_alternativas">
+          <strong>Disponibilidad indicada:</strong> {{ solicitud.visita_fechas_alternativas }}
+        </p>
+        <p *ngIf="solicitud.visita_estado === 'rechazada'" class="respuesta-visita-accion">
+          Elige otra fecha en el formulario inferior y pulsa «Guardar y abrir {{ nombreCanal(solicitud) }}».
+        </p>
+      </section>
 
       <div class="pasos-gestion">
         <section class="paso-gestion paso-visita">
@@ -53,7 +81,7 @@
           <label for="mensaje-visita">Mensaje</label>
           <textarea id="mensaje-visita" rows="5" [(ngModel)]="mensajeVisita"></textarea>
           <button type="button" [disabled]="procesando()" (click)="prepararVisita(solicitud)">
-            Guardar y abrir WhatsApp
+            Guardar y abrir {{ nombreCanal(solicitud) }}
           </button>
         </section>
 
@@ -87,7 +115,7 @@
           <label for="mensaje-presupuesto">Mensaje</label>
           <textarea id="mensaje-presupuesto" rows="5" [(ngModel)]="mensajePresupuesto"></textarea>
           <button type="button" [disabled]="procesando()" (click)="prepararPresupuesto(solicitud)">
-            Guardar y abrir WhatsApp
+            Guardar y abrir {{ nombreCanal(solicitud) }}
           </button>
         </section>
       </div>
@@ -98,8 +126,17 @@
         <h2><span aria-hidden="true">01</span> Datos del cliente</h2>
         <dl>
           <div><dt>Nombre</dt><dd>{{ solicitud.cliente.nombre || 'No indicado' }}</dd></div>
-          <div><dt>Teléfono</dt><dd>{{ solicitud.cliente.telefono }}</dd></div>
-          <div><dt>Email</dt><dd>{{ solicitud.cliente.email || 'No indicado' }}</dd></div>
+          <div>
+            <dt>Teléfono</dt>
+            <dd><a class="dato-accion" [href]="urlTelefono(solicitud.cliente.telefono)">{{ solicitud.cliente.telefono }} <span>Llamar</span></a></dd>
+          </div>
+          <div>
+            <dt>Email</dt>
+            <dd>
+              <a *ngIf="solicitud.cliente.email; else emailNoIndicado" class="dato-accion" [href]="urlEmailDirecto(solicitud.cliente.email)" target="_blank" rel="noopener">{{ solicitud.cliente.email }} <span>Escribir</span></a>
+              <ng-template #emailNoIndicado>No indicado</ng-template>
+            </dd>
+          </div>
           <div><dt>Idioma</dt><dd>{{ formatearTexto(solicitud.cliente.idioma) }}</dd></div>
           <div><dt>Contacto preferido</dt><dd>{{ formatearTexto(solicitud.contacto_preferido) }}</dd></div>
         </dl>
@@ -111,11 +148,12 @@
           <div><dt>Zona</dt><dd>{{ solicitud.zona || 'No indicada' }}</dd></div>
           <div><dt>Tipo de proyecto</dt><dd>{{ formatearTexto(solicitud.tipo_proyecto, 'Por definir') }}</dd></div>
           <div><dt>Tipo de obra</dt><dd>{{ formatearTexto(solicitud.tipo_obra, 'Por definir') }}</dd></div>
-          <div><dt>Estancia</dt><dd>{{ formatearTexto(solicitud.estancia) }}</dd></div>
+          <div><dt>Estancia</dt><dd>{{ formatearTexto(solicitud.estancia, formatearTexto(solicitud.tipo_obra).toLowerCase() === 'reforma integral' ? 'Toda la vivienda' : 'No indicado') }}</dd></div>
           <div><dt>Medidas</dt><dd>{{ solicitud.medidas || 'No indicadas' }}</dd></div>
           <div><dt>Vivienda habitada</dt><dd>{{ formatearTexto(solicitud.vivienda_habitada) }}</dd></div>
           <div><dt>Fecha orientativa</dt><dd>{{ solicitud.fecha_orientativa || 'No indicada' }}</dd></div>
-          <div><dt>Visita concertada</dt><dd>{{ solicitud.fecha_visita ? (solicitud.fecha_visita | date:'dd/MM/yyyy HH:mm') : 'Pendiente' }}</dd></div>
+          <div><dt>Visita propuesta</dt><dd>{{ solicitud.fecha_visita ? (solicitud.fecha_visita | date:'dd/MM/yyyy HH:mm') : 'Pendiente' }}</dd></div>
+          <div><dt>Confirmación de visita</dt><dd>{{ formatearTexto(solicitud.visita_estado, 'Sin programar') }}</dd></div>
           <div><dt>Presupuesto</dt><dd>{{ solicitud.presupuesto !== null ? ((solicitud.presupuesto | number:'1.2-2') + ' €') : 'Pendiente de valoración' }}</dd></div>
         </dl>
       </article>

@@ -5,12 +5,16 @@ const {
   actualizarSolicitud,
   listarSolicitudes,
   obtenerSolicitud,
+  registrarRespuestaVisita,
   eliminarSolicitud
 } = require('../controllers/solicitudes.controller');
 
 const { requerirAdmin } = require('../middleware/auth.middleware');
 
 const router = express.Router();
+
+// n8n: registra la contestación del cliente a una propuesta de visita.
+router.post('/visita/respuesta', registrarRespuestaVisita);
 
 // Angular: lista todas las solicitudes
 router.get('/', requerirAdmin, listarSolicitudes);

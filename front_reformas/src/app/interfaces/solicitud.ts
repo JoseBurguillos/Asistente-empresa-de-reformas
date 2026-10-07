@@ -29,6 +29,10 @@ export interface Solicitud {
   presupuesto: number | null;
   fecha_orientativa: string | null;
   fecha_visita: string | null;
+  visita_estado: 'sin_programar' | 'pendiente_respuesta' | 'confirmada' | 'rechazada';
+  visita_respuesta_cliente: string | null;
+  visita_fechas_alternativas: string | null;
+  visita_respuesta_at: string | null;
   detalles: string | null;
   drive_folder_id: string | null;
   notas_internas: string | null;

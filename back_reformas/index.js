@@ -71,6 +71,35 @@ async function aplicarMigraciones() {
     });
   }
 
+  if (!columnas.visita_estado) {
+    await queryInterface.addColumn('solicitudes', 'visita_estado', {
+      type: DataTypes.STRING(30),
+      allowNull: false,
+      defaultValue: 'sin_programar'
+    });
+  }
+
+  if (!columnas.visita_respuesta_cliente) {
+    await queryInterface.addColumn('solicitudes', 'visita_respuesta_cliente', {
+      type: DataTypes.TEXT,
+      allowNull: true
+    });
+  }
+
+  if (!columnas.visita_fechas_alternativas) {
+    await queryInterface.addColumn('solicitudes', 'visita_fechas_alternativas', {
+      type: DataTypes.TEXT,
+      allowNull: true
+    });
+  }
+
+  if (!columnas.visita_respuesta_at) {
+    await queryInterface.addColumn('solicitudes', 'visita_respuesta_at', {
+      type: DataTypes.DATE,
+      allowNull: true
+    });
+  }
+
   // Conserva los valores existentes al adoptar el nombre que se muestra
   // al usuario en el chatbot y en el panel de gestión.
   if (columnas.fecha_inicio && !columnas.fecha_orientativa) {

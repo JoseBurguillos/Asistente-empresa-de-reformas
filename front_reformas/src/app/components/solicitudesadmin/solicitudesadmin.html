@@ -1,59 +1,39 @@
 <div class="app-shell">
-  <aside class="barra-lateral">
-    <div class="marca">
-      <span class="marca-icono" aria-hidden="true"><i></i><i></i></span>
-      <span><strong>REFORMA</strong><small>panel de obra</small></span>
-    </div>
-
-    <nav aria-label="Navegación principal">
-      <a class="activo" aria-current="page"><span aria-hidden="true">&#9638;</span> Solicitudes</a>
-      <a class="inactivo"><span aria-hidden="true">&#9671;</span> Agenda <small>próximamente</small></a>
-      <a class="inactivo"><span aria-hidden="true">&#9636;</span> Presupuestos <small>próximamente</small></a>
-    </nav>
-
-    <div class="estado-sistema">
-      <span></span>
-      <div><strong>Sistema operativo</strong><small>WhatsApp conectado</small></div>
-    </div>
-
-    <button type="button" class="cerrar-sesion" (click)="cerrarSesion()">
-      <span aria-hidden="true">&#8592;</span> Cerrar sesión
-    </button>
-  </aside>
+  <app-admin-nav active="solicitudes"></app-admin-nav>
 
   <main class="contenido">
     <header class="cabecera-superior">
       <div>
         <p class="miga">Panel de gestión <span>/</span> Solicitudes</p>
-        <h1>Buenos días, equipo.</h1>
-        <p>Todo lo necesario para convertir solicitudes en obras reales.</p>
+        <h1>Control de obra</h1>
+        <p>Revisa entradas, confirma visitas y prepara cada presupuesto.</p>
       </div>
       <button type="button" class="actualizar" (click)="cargarSolicitudes()" [disabled]="cargando()">
-        <span aria-hidden="true">&#8635;</span>
+        <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 6v5h-5M4 18v-5h5M18.5 9A7 7 0 0 0 6.2 6.8L4 11M5.5 15A7 7 0 0 0 17.8 17.2L20 13"/></svg>
         {{ cargando() ? 'Actualizando…' : 'Actualizar datos' }}
       </button>
     </header>
 
     <section class="metricas" aria-label="Resumen de solicitudes">
-      <article>
-        <span class="metrica-icono total" aria-hidden="true">&#9638;</span>
-        <div><small>Total solicitudes</small><strong>{{ resumen().total }}</strong></div>
-        <i>Histórico</i>
+      <article class="metrica-total">
+        <small>Total</small>
+        <strong>{{ resumen().total }}</strong>
+        <span>solicitudes registradas</span>
+      </article>
+      <article class="metrica-prioridad">
+        <small>Por revisar</small>
+        <strong>{{ resumen().nuevas }}</strong>
+        <span>requieren atención</span>
       </article>
       <article>
-        <span class="metrica-icono nuevas" aria-hidden="true">+</span>
-        <div><small>Nuevas por revisar</small><strong>{{ resumen().nuevas }}</strong></div>
-        <i>Entrada</i>
+        <small>En proceso</small>
+        <strong>{{ resumen().activas }}</strong>
+        <span>expedientes activos</span>
       </article>
       <article>
-        <span class="metrica-icono activas" aria-hidden="true">&#8599;</span>
-        <div><small>En proceso</small><strong>{{ resumen().activas }}</strong></div>
-        <i>Activas</i>
-      </article>
-      <article>
-        <span class="metrica-icono hechas" aria-hidden="true">&#10003;</span>
-        <div><small>Completadas</small><strong>{{ resumen().completadas }}</strong></div>
-        <i>Finalizadas</i>
+        <small>Completadas</small>
+        <strong>{{ resumen().completadas }}</strong>
+        <span>obras finalizadas</span>
       </article>
     </section>
 
@@ -65,8 +45,8 @@
     <section class="panel-listado" *ngIf="!cargando() && !error()">
       <div class="panel-cabecera">
         <div>
-          <p class="eyebrow">Bandeja de trabajo</p>
-          <h2>Solicitudes recientes</h2>
+          <h2>Bandeja de solicitudes</h2>
+          <p>Ordenadas por la actividad más reciente.</p>
         </div>
         <span class="contador">{{ solicitudesFiltradas().length }} resultados</span>
       </div>
@@ -74,7 +54,7 @@
       <section class="filtros" *ngIf="solicitudes().length > 0" aria-label="Filtros de solicitudes">
         <label class="buscador">
           <span class="sr-only">Buscar cliente</span>
-          <i aria-hidden="true">&#9906;</i>
+          <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/></svg>
           <input type="search" placeholder="Buscar por nombre o teléfono…" [ngModel]="busqueda()" (ngModelChange)="busqueda.set($event)" />
         </label>
         <label>
@@ -92,41 +72,46 @@
             <option value="email">Email</option>
           </select>
         </label>
-        <button type="button" class="limpiar-filtros" (click)="limpiarFiltros()">Limpiar</button>
+        <button type="button" class="limpiar-filtros" (click)="limpiarFiltros()">Limpiar filtros</button>
       </section>
 
       <div class="sin-solicitudes" *ngIf="solicitudes().length === 0">
-        <span aria-hidden="true">&#8962;</span>
+        <span aria-hidden="true"></span>
         <h2>La bandeja está preparada</h2>
         <p>Cuando un cliente confirme una solicitud por WhatsApp, aparecerá aquí.</p>
       </div>
 
       <p class="sin-resultados" *ngIf="solicitudes().length > 0 && solicitudesFiltradas().length === 0">
-        No hay solicitudes que coincidan con la búsqueda y los filtros.
+        No hay solicitudes que coincidan. Prueba a limpiar los filtros.
       </p>
 
       <div class="tabla-contenedor" *ngIf="solicitudesFiltradas().length > 0">
         <table>
           <thead>
-            <tr><th>Cliente</th><th>Proyecto</th><th>Zona</th><th>Estado</th><th>Contacto</th><th><span class="sr-only">Acciones</span></th></tr>
+            <tr><th>Cliente</th><th>Proyecto</th><th>Zona</th><th>Estado</th><th>Visita</th><th>Contacto</th><th><span class="sr-only">Acciones</span></th></tr>
           </thead>
           <tbody>
             <tr *ngFor="let solicitud of solicitudesFiltradas()">
-              <td>
+              <td data-label="Cliente">
                 <div class="cliente">
                   <span class="avatar">{{ iniciales(solicitud.cliente.nombre) }}</span>
                   <div><strong>{{ solicitud.cliente.nombre || 'Sin nombre' }}</strong><small>Solicitud #{{ solicitud.id }}</small></div>
                 </div>
               </td>
-              <td class="proyecto"><strong>{{ etiquetaProyecto(solicitud.tipo_obra) }}</strong><small>{{ solicitud.detalles || 'Sin descripción adicional' }}</small></td>
-              <td><span class="zona"><i aria-hidden="true"></i>{{ solicitud.zona || 'Sin zona' }}</span></td>
-              <td><span [class]="'estado-tabla estado-' + solicitud.estado">{{ etiquetaEstado(solicitud.estado) }}</span></td>
-              <td><span class="contacto">{{ solicitud.contacto_preferido || 'Por definir' }}</span></td>
-              <td>
+              <td data-label="Proyecto" class="proyecto"><strong>{{ etiquetaProyecto(solicitud.tipo_obra) }}</strong><small>{{ solicitud.detalles || 'Sin descripción adicional' }}</small></td>
+              <td data-label="Zona"><span class="zona"><i aria-hidden="true"></i>{{ solicitud.zona || 'Sin zona' }}</span></td>
+              <td data-label="Estado"><span [class]="'estado-tabla estado-' + solicitud.estado">{{ etiquetaEstado(solicitud.estado) }}</span></td>
+              <td data-label="Visita"><span [class]="'visita-tabla visita-' + solicitud.visita_estado">{{ etiquetaVisita(solicitud.visita_estado) }}</span></td>
+              <td data-label="Contacto"><span class="contacto">{{ solicitud.contacto_preferido || 'Por definir' }}</span></td>
+              <td data-label="Acciones">
                 <div class="acciones">
-                  <a class="boton ver" [routerLink]="['/solicitudes', solicitud.id]" aria-label="Ver detalle de la solicitud">Ver obra <span aria-hidden="true">&#8594;</span></a>
+                  <a class="boton ver" [routerLink]="['/solicitudes', solicitud.id]" [attr.aria-label]="'Abrir solicitud de ' + (solicitud.cliente.nombre || 'cliente')">
+                    Abrir expediente
+                    <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M14 7l5 5-5 5"/></svg>
+                  </a>
                   <button class="boton eliminar" type="button" [disabled]="eliminandoId() === solicitud.id" (click)="eliminarSolicitud(solicitud)" aria-label="Eliminar solicitud">
-                    {{ eliminandoId() === solicitud.id ? '…' : '×' }}
+                    <svg *ngIf="eliminandoId() !== solicitud.id" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg>
+                    <span *ngIf="eliminandoId() === solicitud.id">…</span>
                   </button>
                 </div>
               </td>

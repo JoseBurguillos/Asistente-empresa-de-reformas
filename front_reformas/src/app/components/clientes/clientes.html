@@ -1,0 +1,92 @@
+<div class="app-shell">
+  <app-admin-nav active="clientes"></app-admin-nav>
+
+  <main class="contenido">
+    <header class="cabecera-superior">
+      <div>
+        <p class="miga">Panel de gestión <span>/</span> Clientes</p>
+        <h1>Directorio de clientes</h1>
+        <p>Personas que han contactado con el equipo y su historial de solicitudes.</p>
+      </div>
+      <button type="button" class="actualizar" (click)="cargarClientes()" [disabled]="cargando()">
+        <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 6v5h-5M4 18v-5h5M18.5 9A7 7 0 0 0 6.2 6.8L4 11M5.5 15A7 7 0 0 0 17.8 17.2L20 13"/></svg>
+        {{ cargando() ? 'Actualizando…' : 'Actualizar datos' }}
+      </button>
+    </header>
+
+    <section class="resumen" aria-label="Resumen de clientes">
+      <article><span>Directorio</span><strong>{{ resumen().total }}</strong><small>clientes registrados</small></article>
+      <article><span>Con correo</span><strong>{{ resumen().conEmail }}</strong><small>contactables por email</small></article>
+      <article><span>Recurrentes</span><strong>{{ resumen().recurrentes }}</strong><small>más de una solicitud</small></article>
+    </section>
+
+    <p class="aviso" *ngIf="cargando()"><span class="indicador-carga" aria-hidden="true"></span> Preparando el directorio…</p>
+    <div class="aviso aviso-error" *ngIf="error()">
+      <span>{{ error() }}</span>
+      <button type="button" (click)="cargarClientes()">Reintentar</button>
+    </div>
+
+    <section class="directorio" *ngIf="!cargando() && !error()">
+      <header class="directorio-cabecera">
+        <div>
+          <h2>Todos los clientes</h2>
+          <p>{{ clientesFiltrados().length }} {{ clientesFiltrados().length === 1 ? 'perfil' : 'perfiles' }}</p>
+        </div>
+        <label class="buscador">
+          <span class="sr-only">Buscar cliente</span>
+          <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/></svg>
+          <input type="search" placeholder="Nombre, teléfono, email o zona…" [ngModel]="busqueda()" (ngModelChange)="busqueda.set($event)" />
+        </label>
+      </header>
+
+      <div class="estado-vacio" *ngIf="clientes().length === 0">
+        <span aria-hidden="true"></span>
+        <h3>Aún no hay clientes</h3>
+        <p>Los perfiles aparecerán aquí cuando alguien escriba al asistente.</p>
+      </div>
+
+      <p class="sin-resultados" *ngIf="clientes().length > 0 && clientesFiltrados().length === 0">
+        No hay clientes que coincidan con esa búsqueda.
+      </p>
+
+      <div class="lista-clientes" *ngIf="clientesFiltrados().length > 0">
+        <article class="cliente" *ngFor="let cliente of clientesFiltrados()">
+          <div class="identidad">
+            <span class="avatar">{{ iniciales(cliente.nombre) }}</span>
+            <div>
+              <h3>{{ cliente.nombre || 'Cliente sin nombre' }}</h3>
+              <p>Cliente #{{ cliente.id }} · {{ cliente.solicitudes.length }} {{ cliente.solicitudes.length === 1 ? 'solicitud' : 'solicitudes' }}</p>
+            </div>
+          </div>
+
+          <div class="contactos">
+            <a [href]="urlTelefono(cliente.telefono)" [attr.aria-label]="'Llamar a ' + (cliente.nombre || cliente.telefono)">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M7 3h3l1.5 5-2 1.5a15 15 0 0 0 5 5L16 12.5l5 1.5v3c0 2-2 4-4 4C9.3 20.2 3.8 14.7 3 7c0-2 2-4 4-4Z"/></svg>
+              <span><small>Teléfono</small><strong>{{ cliente.telefono }}</strong></span>
+            </a>
+            <a *ngIf="cliente.email; else sinEmail" [href]="urlEmail(cliente.email!)" target="_blank" rel="noopener" [attr.aria-label]="'Enviar email a ' + cliente.email">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 6h18v12H3zM3 7l9 7 9-7"/></svg>
+              <span><small>Email</small><strong>{{ cliente.email }}</strong></span>
+            </a>
+            <ng-template #sinEmail><div class="contacto-vacio"><small>Email</small><strong>No indicado</strong></div></ng-template>
+          </div>
+
+          <div class="actividad">
+            <span class="canal" [class.canal-email]="nombreCanal(cliente) === 'Email'">{{ nombreCanal(cliente) }}</span>
+            <div>
+              <small>Última solicitud</small>
+              <strong>{{ nombreProyecto(solicitudReciente(cliente)) }}</strong>
+              <span *ngIf="solicitudReciente(cliente) as reciente">{{ reciente.zona || 'Zona sin indicar' }} · {{ reciente.updated_at | date:'dd/MM/yyyy' }}</span>
+            </div>
+          </div>
+
+          <a class="abrir" *ngIf="solicitudReciente(cliente) as reciente" [routerLink]="['/solicitudes', reciente.id]">
+            Abrir expediente
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M14 7l5 5-5 5"/></svg>
+          </a>
+          <span class="sin-expediente" *ngIf="!solicitudReciente(cliente)">Sin expediente</span>
+        </article>
+      </div>
+    </section>
+  </main>
+</div>

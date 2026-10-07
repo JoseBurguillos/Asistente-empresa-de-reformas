@@ -111,11 +111,19 @@ export class Detallessolicitudes implements OnInit {
     const mensaje = !this.mensajeVisita.trim() || this.mensajeVisita.includes('[indica primero')
       ? this.crearMensajeVisita(solicitud, fecha)
       : this.mensajeVisita.trim();
-    this.guardarYAbrirWhatsApp(
+    this.guardarYAbrirContacto(
       solicitud,
-      { fecha_visita: fecha.toISOString(), estado: 'visita_programada' },
+      {
+        fecha_visita: fecha.toISOString(),
+        estado: 'visita_programada',
+        visita_estado: 'pendiente_respuesta',
+        visita_respuesta_cliente: null,
+        visita_fechas_alternativas: null,
+        visita_respuesta_at: null
+      },
       mensaje,
-      'Visita guardada. Se ha abierto WhatsApp con el mensaje preparado.'
+      `Propuesta de visita · Solicitud #${solicitud.id}`,
+      'Visita guardada.'
     );
   }
 
@@ -176,20 +184,28 @@ export class Detallessolicitudes implements OnInit {
     const mensaje = !this.mensajePresupuesto.trim() || this.mensajePresupuesto.includes('[importe pendiente]')
       ? this.crearMensajePresupuesto(solicitud, presupuesto)
       : this.mensajePresupuesto.trim();
-    this.guardarYAbrirWhatsApp(
+    this.guardarYAbrirContacto(
       solicitud,
       { presupuesto, estado: 'presupuesto_preparado' },
       mensaje,
-      'Presupuesto guardado. Se ha abierto WhatsApp con el mensaje preparado.'
+      `Presupuesto · Solicitud #${solicitud.id}`,
+      'Presupuesto guardado.'
     );
   }
 
-  private guardarYAbrirWhatsApp(
+  private guardarYAbrirContacto(
     solicitud: Solicitud,
     cambios: Partial<Solicitud>,
     mensaje: string,
+    asunto: string,
     confirmacion: string
   ): void {
+    const porEmail = this.contactoEsEmail(solicitud);
+    if (porEmail && !solicitud.cliente.email) {
+      this.mensajeGestion.set('El cliente ha pedido contacto por email, pero no tiene un correo registrado. Añade su email antes de continuar.');
+      return;
+    }
+
     const ventana = window.open('', '_blank');
     this.procesando.set(true);
     this.mensajeGestion.set('');
@@ -197,10 +213,12 @@ export class Detallessolicitudes implements OnInit {
     this.solicitudesService.actualizarSolicitud(solicitud.id, cambios).subscribe({
       next: (respuesta) => {
         this.actualizarSolicitudLocal(respuesta.solicitud);
-        const url = this.urlWhatsApp(solicitud.cliente.telefono, mensaje);
+        const url = porEmail
+          ? this.urlGmail(solicitud.cliente.email!, asunto, mensaje)
+          : this.urlWhatsApp(solicitud.cliente.telefono, mensaje);
         if (ventana) ventana.location.href = url;
         else window.location.href = url;
-        this.mensajeGestion.set(confirmacion);
+        this.mensajeGestion.set(`${confirmacion} Se ha abierto ${porEmail ? 'el correo' : 'WhatsApp'} con el mensaje preparado.`);
         this.procesando.set(false);
       },
       error: () => {
@@ -221,12 +239,40 @@ export class Detallessolicitudes implements OnInit {
     return 'https://wa.me/' + numero + '?text=' + encodeURIComponent(mensaje);
   }
 
+  private urlGmail(email: string, asunto: string, mensaje: string): string {
+    const parametros = new URLSearchParams({
+      view: 'cm',
+      fs: '1',
+      to: email,
+      su: asunto,
+      body: mensaje,
+    });
+    return `https://mail.google.com/mail/?${parametros.toString()}`;
+  }
+
+  contactoEsEmail(solicitud: Solicitud): boolean {
+    const canal = (solicitud.contacto_preferido || '').toLowerCase().trim();
+    return canal === 'email' || canal === 'correo' || canal === 'correo_electronico';
+  }
+
+  nombreCanal(solicitud: Solicitud): string {
+    return this.contactoEsEmail(solicitud) ? 'Email' : 'WhatsApp';
+  }
+
+  urlTelefono(telefono: string): string {
+    return `tel:${telefono.replace(/[^\d+]/g, '')}`;
+  }
+
+  urlEmailDirecto(email: string): string {
+    return this.urlGmail(email, 'Contacto de Reformas', '');
+  }
+
   private crearMensajeVisita(solicitud: Solicitud, fecha?: Date): string {
     const nombre = solicitud.cliente.nombre ? ' ' + solicitud.cliente.nombre : '';
     const fechaTexto = fecha
       ? fecha.toLocaleString('es-ES', { dateStyle: 'long', timeStyle: 'short' })
       : '[indica primero la fecha y la hora]';
-    return 'Hola' + nombre + ', somos el equipo de Reformas. Te proponemos realizar la visita para valorar tu solicitud #' + solicitud.id + ' el ' + fechaTexto + '. ¿Te viene bien?';
+    return 'Hola' + nombre + ', somos el equipo de Reformas. Te proponemos realizar la visita para valorar tu solicitud #' + solicitud.id + ' el ' + fechaTexto + '. ¿Te viene bien? Responde SÍ para confirmarla. Si no te viene bien, responde NO e indica qué días y horarios prefieres.';
   }
 
   private crearMensajePresupuesto(solicitud: Solicitud, presupuesto?: number): string {

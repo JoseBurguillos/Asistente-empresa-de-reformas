@@ -1,21 +1,19 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { Solicitud } from '../../interfaces/solicitud';
 import { SolicitudesService } from '../../services/solicitudes';
-import { AuthService } from '../../services/auth';
+import { AdminNav } from '../adminnav/adminnav';
 
 @Component({
   selector: 'app-solicitudesadmin',
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, AdminNav],
   templateUrl: './solicitudesadmin.html',
   styleUrl: './solicitudesadmin.scss',
 })
 export class Solicitudesadmin implements OnInit {
   private readonly solicitudesService = inject(SolicitudesService);
-  private readonly auth = inject(AuthService);
-  private readonly router = inject(Router);
 
   solicitudes = signal<Solicitud[]>([]);
   cargando = signal(true);
@@ -67,13 +65,6 @@ export class Solicitudesadmin implements OnInit {
     this.cargarSolicitudes();
   }
 
-  cerrarSesion(): void {
-    this.auth.cerrarSesion().subscribe({
-      next: () => this.router.navigateByUrl('/login'),
-      error: () => this.router.navigateByUrl('/login')
-    });
-  }
-
   limpiarFiltros(): void {
     this.busqueda.set('');
     this.filtroEstado.set('');
@@ -87,6 +78,15 @@ export class Solicitudesadmin implements OnInit {
   etiquetaEstado(estado: string): string {
     return this.estadosDisponibles.find((item) => item.valor === estado)?.etiqueta
       || estado.replaceAll('_', ' ');
+  }
+
+  etiquetaVisita(estado: Solicitud['visita_estado']): string {
+    return {
+      sin_programar: 'Sin proponer',
+      pendiente_respuesta: 'Esperando respuesta',
+      confirmada: 'Confirmada',
+      rechazada: 'Pide otra fecha'
+    }[estado] || 'Sin proponer';
   }
 
   etiquetaProyecto(valor: string | null): string {
