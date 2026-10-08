@@ -18,6 +18,7 @@ export class Solicitudesadmin implements OnInit {
   solicitudes = signal<Solicitud[]>([]);
   cargando = signal(true);
   error = signal('');
+  errorAccion = signal('');
   eliminandoId = signal<number | null>(null);
   busqueda = signal('');
   filtroEstado = signal('');
@@ -103,6 +104,7 @@ export class Solicitudesadmin implements OnInit {
   cargarSolicitudes(): void {
     this.cargando.set(true);
     this.error.set('');
+    this.errorAccion.set('');
 
     this.solicitudesService.obtenerSolicitudes().subscribe({
       next: (respuesta) => {
@@ -125,7 +127,7 @@ export class Solicitudesadmin implements OnInit {
     if (!confirmado) return;
 
     this.eliminandoId.set(solicitud.id);
-    this.error.set('');
+    this.errorAccion.set('');
 
     this.solicitudesService.eliminarSolicitud(solicitud.id).subscribe({
       next: () => {
@@ -135,7 +137,7 @@ export class Solicitudesadmin implements OnInit {
         this.eliminandoId.set(null);
       },
       error: () => {
-        this.error.set('No se ha podido eliminar la solicitud.');
+        this.errorAccion.set('No se ha podido eliminar la solicitud. Los demás expedientes siguen disponibles.');
         this.eliminandoId.set(null);
       }
     });

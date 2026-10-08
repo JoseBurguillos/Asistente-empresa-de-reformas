@@ -80,10 +80,22 @@
             </div>
           </div>
 
-          <a class="abrir" *ngIf="solicitudReciente(cliente) as reciente" [routerLink]="['/solicitudes', reciente.id]">
-            Abrir expediente
-            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M14 7l5 5-5 5"/></svg>
-          </a>
+          <details class="selector-expedientes" *ngIf="cliente.solicitudes.length > 0">
+            <summary class="abrir">
+              Ver expedientes
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></svg>
+            </summary>
+            <nav class="lista-expedientes" [attr.aria-label]="'Expedientes de ' + (cliente.nombre || cliente.telefono)">
+              <a *ngFor="let solicitud of cliente.solicitudes" [routerLink]="['/solicitudes', solicitud.id]">
+                <span>
+                  <strong>Solicitud #{{ solicitud.id }}</strong>
+                  <small>{{ nombreProyecto(solicitud) }} · {{ solicitud.zona || 'Zona sin indicar' }}</small>
+                </span>
+                <time [attr.datetime]="solicitud.updated_at">{{ solicitud.updated_at | date:'dd/MM/yyyy' }}</time>
+                <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M14 7l5 5-5 5"/></svg>
+              </a>
+            </nav>
+          </details>
           <span class="sin-expediente" *ngIf="!solicitudReciente(cliente)">Sin expediente</span>
         </article>
       </div>

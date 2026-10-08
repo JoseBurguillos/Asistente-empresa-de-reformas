@@ -41,6 +41,7 @@
       <span class="indicador-carga" aria-hidden="true"></span> Preparando el panel de obra…
     </p>
     <p class="aviso aviso-error" *ngIf="error()">{{ error() }}</p>
+    <p class="aviso aviso-error" *ngIf="errorAccion()">{{ errorAccion() }}</p>
 
     <section class="panel-listado" *ngIf="!cargando() && !error()">
       <div class="panel-cabecera">

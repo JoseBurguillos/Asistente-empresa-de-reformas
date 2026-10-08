@@ -1,4 +1,4 @@
-const { Cliente, Solicitud, Foto, DisenoIA } = require('../models');
+const { sequelize, Cliente, Solicitud, Foto, DisenoIA } = require('../models');
 
 const normalizarTelefono = (telefono) => {
   return String(telefono || '').replace(/\D/g, '');
@@ -306,7 +306,20 @@ const eliminarSolicitud = async (req, res, next) => {
       });
     }
 
-    await solicitud.destroy();
+    // La base existente tiene las claves foraneas de fotos y disenos con
+    // ON DELETE NO ACTION. Eliminamos primero los registros dependientes y
+    // hacemos toda la operacion atomica para no dejar datos a medias.
+    await sequelize.transaction(async (transaction) => {
+      await Foto.destroy({
+        where: { solicitud_id: solicitudId },
+        transaction
+      });
+      await DisenoIA.destroy({
+        where: { solicitud_id: solicitudId },
+        transaction
+      });
+      await solicitud.destroy({ transaction });
+    });
 
     res.json({
       ok: true,
