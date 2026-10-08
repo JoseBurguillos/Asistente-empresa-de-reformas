@@ -1,82 +1,144 @@
-# Asistente inteligente para empresas de reformas
+# Asistente IA para empresas de reformas
 
-Plataforma que automatiza la recepción y el seguimiento de solicitudes de reformas por WhatsApp. Combina **n8n, inteligencia artificial, Node.js y Angular** para transformar una conversación en una solicitud organizada, con fotografías, preferencias y un panel privado de gestión.
+![Estado](https://img.shields.io/badge/estado-alpha-E76F51)
+![Angular](https://img.shields.io/badge/Angular-21-DD0031?logo=angular&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-Express_5-339933?logo=nodedotjs&logoColor=white)
+![Ollama](https://img.shields.io/badge/IA_local-Ollama_·_Qwen3%3A8B-111111)
+![n8n](https://img.shields.io/badge/automatización-n8n-EA4B71?logo=n8n&logoColor=white)
 
-El cliente describe su reforma desde WhatsApp y el equipo consulta la información, programa visitas y registra presupuestos desde el panel administrativo.
+Plataforma que convierte conversaciones de WhatsApp en solicitudes de reforma organizadas y accionables. El asistente recopila la información del cliente, interpreta mensajes escritos de forma natural, ordena fotografías y deja cada expediente preparado para que la empresa pueda revisarlo, concertar una visita, enviar un presupuesto y seguir la obra desde un panel privado.
 
-## Funcionalidades
+> **Estado del proyecto:** versión alpha funcional desarrollada como proyecto personal. Está abierta a pruebas, sugerencias y mejoras; todavía no es un producto preparado para producción.
 
-- **Atención conversacional:** recopilación guiada de datos del cliente, ubicación, tipo de reforma, medidas y fecha orientativa, con una pregunta cada vez.
-- **Contexto por conversación:** seguimiento de la información pendiente, correcciones y nuevas solicitudes del mismo cliente.
-- **Automatización con n8n:** workflow de más de 50 nodos que conecta mensajería, interpretación con IA, validación de datos y persistencia.
-- **Fotografías organizadas:** almacenamiento en Google Drive de imágenes del estado actual, referencias y bocetos asociados a cada solicitud.
-- **Bocetos con IA:** generación y modificación iterativa de imágenes mediante FLUX en Cloudflare Workers AI, con confirmación por WhatsApp.
-- **Panel administrativo:** búsqueda y filtrado de solicitudes, consulta del detalle, fotografías, estados, visitas y presupuestos.
-- **Ejemplos confirmados:** recuperación de interpretaciones anteriores como contexto para la IA, sin entrenar un modelo desde cero.
-- **Autenticación:** acceso administrativo con JWT en una cookie `HttpOnly` y contraseñas almacenadas como hashes con bcryptjs.
+![Panel de solicitudes](docs/readme/panel-solicitudes.png)
 
-Los bocetos son orientativos: ayudan a visualizar una reforma y no sustituyen un proyecto técnico ni una valoración profesional.
+## El problema
+
+En muchas empresas de reformas, las nuevas peticiones llegan mezcladas entre llamadas, correos y mensajes de WhatsApp. El responsable termina revisando conversaciones a todas horas —incluso fuera de la jornada o durante las vacaciones— para averiguar qué quiere cada cliente, dónde se realizará el trabajo, cuándo podría comenzar y qué fotografías ha enviado.
+
+Este proyecto automatiza esa primera recogida de información. No sustituye la valoración profesional ni toma decisiones por la empresa: reduce el trabajo repetitivo y presenta cada solicitud de forma estructurada para que el equipo conserve el control.
+
+## Cómo funciona
+
+1. **El cliente escribe por WhatsApp** como lo haría normalmente, sin formularios rígidos.
+2. **Ollama y Qwen3:8B interpretan el mensaje en local** y extraen los datos relevantes de la reforma.
+3. **n8n coordina la conversación**, recuerda qué información falta, aplica validaciones y conecta los servicios.
+4. **Las fotografías se organizan en Google Drive** dentro del expediente correspondiente.
+5. Si el cliente lo desea, **FLUX genera un boceto orientativo** que puede modificarse mediante nuevas indicaciones.
+6. Tras la confirmación, **Node.js registra la solicitud en SQLite** y el panel Angular la muestra al equipo.
+7. Desde el panel se puede **revisar la petición, proponer una visita, preparar el mensaje, registrar el presupuesto y marcar la obra como completada**.
+
+La interpretación combina IA con reglas deterministas. Esto permite comprender respuestas como `wasa`, `wasap`, `WhatsApp`, `correo` o `gmail`, y evita depender únicamente de una salida generada por el modelo.
+
+<table>
+  <tr>
+    <td width="38%"><img src="docs/readme/conversacion-whatsapp.jpeg" alt="Conversación de una solicitud de reforma por WhatsApp"></td>
+    <td width="62%"><img src="docs/readme/agenda-visitas.png" alt="Agenda de visitas del panel de gestión"></td>
+  </tr>
+  <tr>
+    <td align="center"><strong>Conversación flexible</strong></td>
+    <td align="center"><strong>Seguimiento desde el panel</strong></td>
+  </tr>
+</table>
+
+## Funcionalidades actuales
+
+### Atención al cliente
+
+- Recogida guiada de nombre, zona, tipo de trabajo, estancia, medidas y fecha orientativa.
+- Detección de si la vivienda permanecerá habitada durante los trabajos.
+- Elección del canal de contacto: WhatsApp o correo electrónico.
+- Comprensión de expresiones coloquiales, errores ortográficos y respuestas breves según el contexto.
+- Corrección de datos antes de confirmar la solicitud.
+- Varias solicitudes asociadas al mismo cliente sin mezclar los expedientes.
+
+### Fotografías y diseño
+
+- Recepción de fotografías del estado actual y de referencias visuales.
+- Organización automática por cliente y solicitud en Google Drive.
+- Generación de bocetos orientativos con FLUX mediante Cloudflare Workers AI.
+- Iteraciones sobre el último boceto: el cliente puede pedir cambios concretos y confirmar el resultado final.
+- Galería integrada en el expediente administrativo.
+
+![Archivo visual de una solicitud](docs/readme/archivo-visual.png)
+
+### Gestión de la empresa
+
+- Inicio de sesión para el equipo administrativo.
+- Bandeja de solicitudes con búsqueda y filtros por estado y canal de contacto.
+- Expediente completo con datos del cliente, memoria, seguimiento y archivo visual.
+- Propuesta de visitas y registro de la respuesta del cliente.
+- Agenda mensual de visitas confirmadas o pendientes.
+- Aceptación de solicitudes y registro del presupuesto.
+- Preparación de mensajes para WhatsApp o correo; el envío permanece bajo control humano.
+- Estados de seguimiento desde la entrada de la solicitud hasta la obra completada.
+- Directorio de clientes y acceso a su historial de solicitudes.
 
 ## Arquitectura
 
 ```mermaid
 flowchart LR
-    C[Cliente en WhatsApp] <--> W[WhatsApp Cloud API]
-    W <--> N[n8n: conversación y validación]
-    N <--> O[Ollama: interpretación de mensajes]
-    N <--> B[API Node.js y Express]
-    B <--> D[(SQLite / Sequelize)]
-    A[Panel Angular] <--> B
-    N <--> G[Google Drive: fotografías]
-    N <--> F[Cloudflare Workers AI / FLUX]
+    C[Cliente] <--> W[WhatsApp Cloud API]
+    W <--> N[n8n]
+    N <--> O[Ollama · Qwen3:8B]
+    N <--> B[API Node.js · Express]
+    B <--> D[(SQLite · Sequelize)]
+    A[Panel Angular 21] <--> B
+    N <--> G[Google Drive]
+    N <--> F[Cloudflare Workers AI · FLUX]
 ```
 
-La IA interpreta los mensajes y extrae información. Después, reglas deterministas validan los datos antes de guardarlos, con el objetivo de reducir errores y confirmaciones prematuras. La conversación conserva su estado mediante el teléfono del cliente; una nueva reforma tiene su propia solicitud y sus propias fotografías.
+La parte conversacional se ejecuta en un entorno local con Ollama. Meta gestiona el canal de WhatsApp, Google Drive almacena las imágenes y Cloudflare genera los bocetos, por lo que esos servicios externos siguen interviniendo en el flujo completo.
 
 ## Tecnologías
 
 | Área | Tecnologías |
 | --- | --- |
-| Frontend | Angular 21, TypeScript, SCSS |
+| Frontend | Angular 21, TypeScript, SCSS, RxJS |
 | Backend | Node.js, Express 5 |
 | Persistencia | Sequelize, SQLite |
 | Automatización | n8n, Docker Desktop |
+| IA conversacional local | Ollama, Qwen3:8B |
 | Mensajería | WhatsApp Cloud API de Meta |
-| Interpretación de mensajes | Ollama |
-| Generación de imágenes | FLUX mediante Cloudflare Workers AI |
+| Generación visual | FLUX (`flux-2-klein-4b`) mediante Cloudflare Workers AI |
 | Archivos | Google Drive |
 | Autenticación | JWT, bcryptjs, cookies `HttpOnly` |
-| Conexión durante el desarrollo | ngrok |
+| Desarrollo e integración | ngrok |
 
-## Contenido del repositorio
+## Estructura del repositorio
 
 ```text
 back_reformas/
   config/          Configuración de autenticación
   controllers/     Lógica de los endpoints
   database/        Conexión con SQLite
-  middleware/      Comprobación de acceso administrativo
+  middleware/      Protección de rutas administrativas
   models/          Modelos y relaciones de Sequelize
-  routes/          Rutas de la API
+  routes/          Rutas de la API REST
   index.js         Inicio del servidor
+
 front_reformas/
   src/app/
-    components/    Login, listado y detalle de solicitudes
+    components/    Login, solicitudes, detalle, agenda y clientes
     guards/        Protección de navegación
     interfaces/    Tipos de datos
     services/      Comunicación con la API
+
 docs/
   index.html       Política de privacidad
+  readme/          Capturas de demostración
 ```
 
-**Alcance:** este repositorio contiene el backend, el frontend y la página de privacidad. El workflow exportado de n8n y las credenciales de los servicios externos no están incluidos. La descripción de la automatización corresponde al sistema completo; clonar este repositorio por sí solo no configura el asistente de WhatsApp.
+### Alcance del código publicado
+
+El repositorio contiene el backend, el frontend y la página de privacidad. El workflow completo de n8n y las credenciales de Meta, Google Drive y Cloudflare no están incluidos. Clonar este código permite ejecutar el panel y la API, pero no configura automáticamente el asistente de WhatsApp.
 
 ## Puesta en marcha local
 
 ### Requisitos
 
-- Node.js y npm compatibles con las dependencias de Angular 21 y del backend.
-- Para la conversación completa: n8n, Ollama y las integraciones configuradas con Meta, Google Drive y Cloudflare.
+- Node.js y npm compatibles con Angular 21.
+- Para el flujo conversacional completo: Docker, n8n, Ollama y las integraciones externas configuradas.
 
 ### 1. Clonar el repositorio
 
@@ -92,26 +154,28 @@ cd back_reformas
 npm install
 ```
 
-Crear `back_reformas/.env` con la configuración local:
+Crear `back_reformas/.env`:
 
 ```dotenv
 PORT=3001
-JWT_SECRET=reemplazar_por_un_secreto_aleatorio_largo
+JWT_SECRET=utiliza_un_secreto_aleatorio_largo
 ```
 
-No publicar el archivo `.env`. Después, desde `back_reformas`:
+Después:
 
 ```bash
 npm run dev
 ```
 
-También se puede iniciar sin recarga automática con `npm start`. La API utiliza por defecto `http://localhost:3001`; `GET /health` devuelve `{ "ok": true }` cuando el servidor está disponible. SQLite se almacena en `back_reformas/data/reformas.db` y el arranque sincroniza los modelos y aplica los ajustes de esquema definidos en el código.
+También puede iniciarse sin recarga automática con `npm start`. La API utiliza por defecto `http://localhost:3001` y `GET /health` devuelve `{ "ok": true }` cuando el servidor está disponible.
 
-El código crea una cuenta administrativa inicial con valores predeterminados si no existe. Revisar `crearAdminInicial()` en `back_reformas/index.js` y sustituir esa configuración antes de exponer el servicio; cambiar el código de inicialización no actualiza una cuenta que ya existe.
+SQLite se almacena en `back_reformas/data/reformas.db`. El arranque sincroniza los modelos y aplica los ajustes de esquema incluidos en el código.
+
+> El prototipo crea una cuenta administrativa inicial si todavía no existe. Antes de exponer el servicio, cambia esa configuración en `crearAdminInicial()` y no reutilices credenciales de demostración.
 
 ### 3. Iniciar el frontend
 
-En otra terminal, desde la raíz del repositorio:
+En otra terminal:
 
 ```bash
 cd front_reformas
@@ -119,31 +183,42 @@ npm install
 npm start
 ```
 
-Abrir `http://localhost:4200`. Los servicios del frontend apuntan al backend local en el puerto 3001 y envían las cookies de sesión. Si se cambia el host o el puerto, hay que actualizar las URL de los servicios y los orígenes CORS del backend.
-
-Para compilar el frontend:
+Abrir `http://localhost:4200`. Para crear una compilación de producción:
 
 ```bash
 npm run build
 ```
 
+Los servicios del frontend apuntan al backend local en el puerto `3001` y envían las cookies de sesión. Si se cambia el host o el puerto, hay que actualizar las URL de los servicios y los orígenes CORS del backend.
+
 ### 4. Conectar la automatización
 
-El flujo de n8n se configura por separado para recibir los mensajes de WhatsApp, consultar el contexto en la API, interpretar respuestas con Ollama, validar información y registrar solicitudes. También necesita acceso a Google Drive y Cloudflare para gestionar fotografías y bocetos.
+El flujo de n8n se configura por separado. Debe recibir los eventos de WhatsApp, recuperar el estado de la conversación, consultar Ollama, validar la respuesta, registrar la solicitud y coordinar Google Drive y Cloudflare.
 
-En el entorno descrito se usa ngrok para hacer accesible el webhook durante el desarrollo. No hay un archivo de workflow importable en este repositorio ni un despliegue completo automatizado.
+Durante el desarrollo puede utilizarse ngrok para exponer el webhook local. Este repositorio no incluye un despliegue automatizado ni un workflow importable listo para producción.
 
-## Sesiones y acceso
+## Seguridad y privacidad
 
-Las sesiones administrativas duran ocho horas. Las cookies usan `HttpOnly` y `SameSite=Lax`, y activan `Secure` cuando `NODE_ENV=production`. Si no se define `JWT_SECRET`, el backend genera un secreto temporal y las sesiones dejan de ser válidas al reiniciarlo.
+- No publiques archivos `.env`, tokens, credenciales ni bases de datos con información real.
+- Utiliza únicamente datos ficticios o anonimizados en demostraciones y capturas.
+- Protege las rutas empleadas por las integraciones y limita su acceso en producción.
+- Configura HTTPS, copias de seguridad y rotación de secretos antes de desplegar.
+- Las sesiones administrativas duran ocho horas; la cookie utiliza `HttpOnly`, `SameSite=Lax` y activa `Secure` con `NODE_ENV=production`.
 
-Las operaciones administrativas protegidas requieren el rol de administrador. Algunas rutas de integración, como la creación de solicitudes utilizada por n8n, no emplean ese mismo middleware: antes de publicar la API deben contar con autenticación apropiada para la integración o restricciones de red.
+Los bocetos generados son únicamente orientativos. No sustituyen un proyecto técnico, una medición ni una valoración profesional.
 
-## Estado de ejecución y despliegue
+## Estado y próximos pasos
 
-El sistema descrito funciona en un entorno local e híbrido: frontend, backend, Ollama y n8n se ejecutan localmente; WhatsApp, Drive y Cloudflare aportan los servicios externos.
+Actualmente el proyecto funciona como una demostración local e híbrida. Antes de considerarlo apto para producción quedan, entre otras tareas:
 
-Para un despliegue permanente quedan por configurar el alojamiento del backend y n8n, dominio y HTTPS, credenciales definitivas, protección de las rutas de integración y copias de seguridad. Utilizar datos de prueba al preparar una demostración y revisar la base de datos antes de compartirla.
+- reforzar la autenticación de las rutas de integración;
+- mover toda la configuración de hosts y credenciales a variables de entorno;
+- añadir pruebas automatizadas y validaciones de extremo a extremo;
+- preparar un despliegue permanente con dominio y HTTPS;
+- definir copias de seguridad, registro de errores y monitorización;
+- continuar mejorando la experiencia móvil y la accesibilidad.
+
+Las propuestas, pruebas y recomendaciones son bienvenidas. Puedes abrir una *issue* explicando el caso de uso o la mejora que te gustaría ver.
 
 ## Autor
 
